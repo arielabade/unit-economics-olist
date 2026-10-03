@@ -1,73 +1,52 @@
-# Unit Economics by Acquisition Channel
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/header-dark.svg">
+    <img alt="Unit Economics by Channel: CAC, LTV, payback and contribution margin by acquisition channel" src="assets/brand/header-light.svg" width="100%">
+  </picture>
+</p>
 
-CAC, LTV, LTV/CAC, payback and contribution margin for a marketplace, by channel, in SQL.
+<p align="center">
+  <img alt="Method stage: scale" src="https://img.shields.io/badge/stage-scale-5B6CFF?style=flat-square&labelColor=050505">
+  <img alt="DuckDB and SQL" src="https://img.shields.io/badge/DuckDB-SQL-7E8791?style=flat-square&labelColor=050505">
+  <img alt="Tests: 23" src="https://img.shields.io/badge/tests-23-7E8791?style=flat-square&labelColor=050505">
+  <img alt="Data: real orders, simulated channels" src="https://img.shields.io/badge/data-real_%2B_simulated_channels-C8B680?style=flat-square&labelColor=050505">
+</p>
 
----
+**97% of customers buy exactly once, so acquisition has to pay for itself on the first order.** At a
+15% take rate that first order leaves R$ 16.13 of margin, and paid search spends 71% of it to acquire
+the customer.
 
-## 1. Business problem
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/kpis-dark.svg">
+    <img alt="97.0% buy exactly once; R$16.13 first-order margin ceiling; paid search CAC consumes 71% of it" src="assets/brand/kpis-light.svg" width="100%">
+  </picture>
+</p>
 
-A marketplace is spending on paid acquisition and wants to know which channels pay for themselves.
-The question is not "which channel brings the most customers" but "which channel brings customers
-worth more than they cost", which requires a margin model, not a revenue model.
-
-The complication is that a marketplace does not keep the value of a sale. It keeps a commission on
-it, so unit economics built on GMV would overstate the business by roughly the inverse of the take
-rate.
-
----
-
-## 2. Key results
-
-**97.00% of customers buy exactly once.** Out of 93,358 customers with a delivered order, only 3.00%
-ever place a second one. This is measured on real Olist data and it is the finding that governs
-everything else: there is no second purchase to recover acquisition cost from, so **CAC has to clear
-on the first order**.
-
-That makes the first-order contribution margin a hard ceiling. At a 15% take rate, the blended
-contribution margin is **R$ 16.13 per customer**, so:
-
-| Target LTV/CAC | Maximum CAC the business can pay |
-| --- | --- |
-| 1.0 (break-even) | R$ 16.13 |
-| 3.0 (common planning target) | R$ 5.38 |
-
-Against the simulated spend scenario, paid channels land at a blended **LTV/CAC of 1.59** — above
-break-even, far below a 3x target:
-
-| Channel | Paid | Customers | Margin / customer | CAC | LTV/CAC | CAC as share of first-order margin |
-| --- | --- | --- | --- | --- | --- | --- |
-| organic_search | no | 24,851 | R$ 16.08 | — | — | — |
-| paid_search | yes | 20,450 | R$ 16.31 | R$ 11.65 | 1.40 | 71.4% |
-| paid_social | yes | 16,515 | R$ 16.16 | R$ 11.26 | 1.43 | 69.7% |
-| direct | no | 14,035 | R$ 16.24 | — | — | — |
-| marketplace_referral | no | 9,166 | R$ 15.73 | — | — | — |
-| email_crm | yes | 7,360 | R$ 16.03 | R$ 3.74 | 4.28 | 23.3% |
-
-**The decision this supports.** Paid search and paid social consume about 70% of a customer's entire
-first-order margin to acquire them, on a base that does not come back. Two moves follow, in order:
-raise the margin per order (take rate, basket size, cheaper service) before raising budget, and shift
-budget toward email/CRM, which clears 4.28x — while checking whether CRM is genuinely acquiring or
-simply taking credit for demand that already existed.
-
-Unpaid channels show no CAC rather than a CAC of zero. They have no media line, so the ratio is
-undefined. Reporting zero would make organic the best-performing channel in every table it appears in.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/arc-dark.svg">
+    <img alt="Context, problem, strategy and result of the case" src="assets/brand/arc-light.svg" width="100%">
+  </picture>
+</p>
 
 ---
 
-## 3. Data
+## 01 — Context
+
+A marketplace is spending on paid acquisition across several channels. It does not keep the value of
+a sale: it keeps a **commission** on it. Unit economics built on GMV would overstate the business by
+roughly the inverse of the take rate.
+
+### Data
 
 | | |
 | --- | --- |
 | Source | Olist Brazilian E-Commerce public dataset |
 | Original home | [Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) (requires login) |
-| Mirror used | [Hugging Face](https://huggingface.co/datasets/aviahYadler/Olist_Ecommerce_Dataset) — identical files, no credentials needed |
+| Mirror used | [Hugging Face](https://huggingface.co/datasets/aviahYadler/Olist_Ecommerce_Dataset): identical files, no credentials needed |
 | Size | 99,441 orders · 112,650 order items · 96,096 unique customers |
 | Period | Orders from 2016-09 to 2018-08; analysis window 2017-02 to 2018-08 |
-
-`src/unit_economics/ingest.py` asserts the row count of every file against the published figures, so
-a truncated or swapped mirror fails loudly instead of silently changing the results.
-
-### What is real and what is simulated
 
 | Real (from Olist) | SIMULATED (generated by this project) |
 | --- | --- |
@@ -76,74 +55,95 @@ a truncated or swapped mirror fails loudly instead of silently changing the resu
 | Everything in the retention result | Everything in the channel-level CAC results |
 
 **Olist publishes no acquisition channel and no media spend.** Channel membership is a deterministic
-hash of `customer_unique_id`; spend is a declared share of the previous month's net revenue. This is
-stated here, in the module docstring of `channels.py`, and in the dashboard.
+hash of `customer_unique_id`, and spend is a declared share of the previous month's net revenue. The
+**retention and margin findings are evidence**. The **channel findings demonstrate the measurement
+framework**. They are not a claim about Olist's real marketing.
 
-The consequence: the **retention and margin findings are evidence**. The **channel-level findings are
-a demonstration of the measurement framework**, not a claim about Olist's real marketing.
-
----
-
-## 4. Approach
-
-**DuckDB and SQL for the transformations**, not pandas. The work is joins and aggregations over
-~112k rows, which is what SQL is for, and it keeps the business logic reviewable by an analyst who
-does not read Python. DuckDB runs in-process, so there is no warehouse to stand up to reproduce this.
-
-**Assumptions as session variables**, not string-formatted SQL. `take_rate` and the cost rates are
-published with `SET VARIABLE` and read with `getvariable()`, so the `.sql` files stay parameterised
-and readable on their own.
-
-**Margin on commission, not on GMV.** Modelling a marketplace as a retailer is the most common way to
-get this analysis wrong by an order of magnitude.
-
-**Budget lags revenue by one month.** The alternative — sizing spend from the customers actually
-acquired — makes CAC a constant by construction and the entire analysis circular: the model returns
-the target CPA it was fed. A test pins the function signature so spend can never start depending on
-acquisitions.
-
-**Launch months excluded.** 2016-09 and 2016-12 contain a single order each. Including them produces
-CAC figures in the thousands that describe a platform that was not operating yet.
+`src/unit_economics/ingest.py` asserts every file's row count against the published figures, so a
+truncated or swapped mirror fails loudly.
 
 ---
 
-## 5. Business metrics
+## 02 — Problem
+
+The question is not *which channel brings the most customers* but *which channel brings customers
+worth more than they cost*. That needs a margin model, not a revenue model.
+
+---
+
+## 03 — Strategy
+
+| Decision | Why |
+| --- | --- |
+| **DuckDB SQL for transformations** | Joins and aggregations over ~112k rows, reviewable by an analyst who does not read Python, with no warehouse to stand up. |
+| **Assumptions as session variables** | `take_rate` and cost rates are set with `SET VARIABLE` and read with `getvariable()`, so the `.sql` files stay parameterised. |
+| **Margin on commission, not GMV** | Modelling a marketplace as a retailer is the most common way to get this wrong by an order of magnitude. |
+| **Budget lags revenue by one month** | Sizing spend from acquired customers makes CAC constant by construction. A test pins the signature so spend can never depend on acquisitions. |
+| **Launch months excluded** | 2016-09 and 2016-12 have one order each and produce CAC in the thousands. |
+
+### Metrics
 
 ```
 contribution_margin = gmv * take_rate          (commission earned)
                     - gmv * psp_fee_rate       (payment cost, on the full transaction)
                     - variable_support_cost * orders
-
 CAC                 = channel_spend / new_customers_acquired
 LTV                 = observed contribution margin per customer
-LTV/CAC             = LTV / CAC
-break-even CAC      = LTV
 CAC ceiling at Nx   = LTV / N
 ```
 
-Because 97% of customers buy once, payback is not measured in months. The meaningful quantity is
-**what share of the first order's margin acquisition consumed** — reported above.
-
-### Assumptions, all in `src/unit_economics/config.py`
+Every assumption lives in [`src/unit_economics/config.py`](src/unit_economics/config.py):
 
 | Assumption | Value | Note |
 | --- | --- | --- |
-| Take rate | 15% | Not published by Olist. The single most sensitive input in the model. |
-| Payment processing | 2.5% of GMV | Charged on the full transaction, not on the commission. |
+| Take rate | 15% | Not published by Olist. The most sensitive input in the model. |
+| Payment processing | 2.5% of GMV | Charged on the full transaction. |
 | Variable support cost | R$ 1.50 per order | Service, disputes, reverse logistics. |
 | Marketing intensity | 25% of previous month's net revenue | Sets the simulated budget. |
 
-Change one value and re-run: every number above moves with it.
+---
+
+## 04 — Result
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/chart-dark.svg">
+    <img alt="LTV/CAC by paid channel: email_crm 4.28x, paid_social 1.43x, paid_search 1.40x; only email clears the 3x target" src="assets/brand/chart-light.svg" width="100%">
+  </picture>
+</p>
+
+**Out of 93,358 customers with a delivered order, only 3.00% ever place a second one.** There is no
+second purchase to recover acquisition cost from, so the first-order margin is a hard ceiling:
+
+| Target LTV/CAC | Maximum CAC the business can pay |
+| --- | --- |
+| 1.0 (break-even) | R$ 16.13 |
+| 3.0 (common planning target) | R$ 5.38 |
+
+| Channel | Paid | Customers | Margin / customer | CAC | LTV/CAC | CAC as share of first-order margin |
+| --- | --- | --- | --- | --- | --- | --- |
+| organic_search | no | 24,851 | R$ 16.08 | — | — | — |
+| paid_search | yes | 20,450 | R$ 16.31 | R$ 11.65 | 1.40 | 71.4% |
+| paid_social | yes | 16,515 | R$ 16.16 | R$ 11.26 | 1.43 | 69.7% |
+| direct | no | 14,035 | R$ 16.24 | — | — | — |
+| marketplace_referral | no | 9,166 | R$ 15.73 | — | — | — |
+| email_crm | yes | 7,360 | R$ 16.03 | R$ 3.74 | **4.28** | 23.3% |
+
+Unpaid channels show no CAC rather than a CAC of zero: the ratio is undefined. Reporting zero would
+make organic the best channel in every table.
+
+> **Decision.** Raise margin per order (take rate, basket size, cheaper service) before raising paid
+> budget, and shift budget toward email/CRM. First, check whether CRM is acquiring new customers or
+> taking credit for demand that already existed.
 
 ---
 
-## 6. Limitations and next steps
+## 05 — Limits and next move
 
-- **Channel and spend are simulated.** No conclusion about Olist's real channel performance can be
-  drawn from this. The framework is the deliverable; the channel numbers are a worked example.
-- **The take rate is an assumption, and the conclusion is sensitive to it.** Average GMV per customer
-  is R$ 141.43, so the break-even CAC moves fast with the commission the marketplace is assumed to
-  charge:
+- **Channel and spend are simulated.** No conclusion about Olist's real channels follows. The
+  framework is the deliverable.
+- **The take rate is assumed, and the conclusion is sensitive to it.** Average GMV per customer is
+  R$ 141.43:
 
   | Take rate | Break-even CAC | Paid channels that still clear it |
   | --- | --- | --- |
@@ -153,42 +153,53 @@ Change one value and re-run: every number above moves with it.
   | 10.0% | R$ 9.06 | email_crm only |
   | 8.0% | R$ 6.23 | email_crm only |
 
-  Below roughly 12%, paid search and paid social stop paying for themselves. Nobody outside Olist
-  knows the real number, so this is the first thing to pin down before acting on any of it.
-- **LTV is observed, not predicted.** A customer acquired in 2018-08 has had one month to come back.
-  Later cohorts are structurally censored, which biases observed LTV downward.
-  Predicting the uncensored value is the job of
-  [clv-cohort-prediction](https://github.com/arielabade/clv-cohort-prediction).
-- **No incrementality.** CAC here is average cost, not incremental cost. A channel clearing 3x on
-  average may still be buying demand that would have converted anyway — which is what
+  Below roughly 12%, paid search and paid social stop paying for themselves. Pin this number down
+  before acting.
+- **LTV is observed, not predicted.** Later cohorts are censored, which biases LTV down. Predicting
+  the uncensored value is the job of [clv-cohort-prediction](https://github.com/arielabade/clv-cohort-prediction).
+- **No incrementality.** CAC here is average cost, not incremental cost. See
   [marketing-mix-modeling](https://github.com/arielabade/marketing-mix-modeling) and
-  [ab-testing-toolkit](https://github.com/arielabade/ab-testing-toolkit) exist to address.
-- **Next step:** sensitivity analysis on the take rate, and a cohort-level view of whether CAC is
-  rising within channels over the period rather than only across them.
+  [ab-testing-toolkit](https://github.com/arielabade/ab-testing-toolkit).
+- **Next move:** a take-rate sensitivity run, and a cohort view of whether CAC rises *within*
+  channels over time.
 
 ---
 
-## 7. How to run
+## Run it
 
 ```bash
 git clone https://github.com/arielabade/unit-economics-olist
 cd unit-economics-olist
-
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
 python -m unit_economics.ingest      # downloads ~45MB and verifies row counts
 python -m unit_economics.pipeline    # builds the analysis, writes data/processed/
 pytest                               # 23 tests
-streamlit run app/streamlit_app.py
+streamlit run app/streamlit_app.py   # dashboard
 ```
 
-### Layout
+## Repository map
 
 ```
-sql/        transformations, in order: staging, customer economics, channel economics
+sql/        staging → customer economics → channel economics, in order
 src/        ingest, simulated channels, pipeline, metric formulas, roll-up
 tests/      formulas, simulation reproducibility, the anti-circularity guard
 app/        Streamlit dashboard
+notebooks/  exploration
 data/       raw/ and processed/, both git-ignored
 ```
+
+---
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/track-dark.svg">
+    <img alt="ABADE method: validate, scale, retain, build. This repository: scale" src="assets/brand/track-light.svg" width="100%">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://github.com/arielabade">Portfolio</a> &nbsp;·&nbsp;
+  <a href="https://github.com/arielabade/clv-cohort-prediction">Next: predict what customers are worth →</a>
+</p>
