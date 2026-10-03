@@ -1,9 +1,4 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/header-dark.svg">
-    <img alt="Unit Economics by Channel: CAC, LTV, payback and contribution margin by acquisition channel" src="assets/brand/header-light.svg" width="100%">
-  </picture>
-</p>
+<p align="center"><img alt="Unit Economics by Channel: CAC, LTV, payback and contribution margin by acquisition channel" src="assets/brand/header.svg" width="100%"></p>
 
 <p align="center">
   <img alt="Method stage: scale" src="https://img.shields.io/badge/stage-scale-5B6CFF?style=flat-square&labelColor=050505">
@@ -16,19 +11,9 @@
 15% take rate that first order leaves R$ 16.13 of margin, and paid search spends 71% of it to acquire
 the customer.
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/kpis-dark.svg">
-    <img alt="97.0% buy exactly once; R$16.13 first-order margin ceiling; paid search CAC consumes 71% of it" src="assets/brand/kpis-light.svg" width="100%">
-  </picture>
-</p>
+<p align="center"><img alt="97.0% buy exactly once; R$16.13 first-order margin ceiling; paid search CAC consumes 71% of it" src="assets/brand/kpis.svg" width="100%"></p>
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/arc-dark.svg">
-    <img alt="Context, problem, strategy and result of the case" src="assets/brand/arc-light.svg" width="100%">
-  </picture>
-</p>
+<p align="center"><img alt="Context, problem, strategy and result of the case" src="assets/brand/arc.svg" width="100%"></p>
 
 ---
 
@@ -105,12 +90,7 @@ Every assumption lives in [`src/unit_economics/config.py`](src/unit_economics/co
 
 ## 04 — Result
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/chart-dark.svg">
-    <img alt="LTV/CAC by paid channel: email_crm 4.28x, paid_social 1.43x, paid_search 1.40x; only email clears the 3x target" src="assets/brand/chart-light.svg" width="100%">
-  </picture>
-</p>
+<p align="center"><img alt="LTV/CAC by paid channel: email_crm 4.28x, paid_social 1.43x, paid_search 1.40x; only email clears the 3x target" src="assets/brand/chart.svg" width="100%"></p>
 
 **Out of 93,358 customers with a delivered order, only 3.00% ever place a second one.** There is no
 second purchase to recover acquisition cost from, so the first-order margin is a hard ceiling:
@@ -192,12 +172,7 @@ data/       raw/ and processed/, both git-ignored
 
 ---
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/track-dark.svg">
-    <img alt="ABADE method: validate, scale, retain, build. This repository: scale" src="assets/brand/track-light.svg" width="100%">
-  </picture>
-</p>
+<p align="center"><img alt="ABADE method: validate, scale, retain, build. This repository: scale" src="assets/brand/track.svg" width="100%"></p>
 
 <p align="center">
   <a href="https://github.com/arielabade">Portfolio</a> &nbsp;·&nbsp;
