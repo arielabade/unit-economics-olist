@@ -1,0 +1,7 @@
+channel,paid,new_customers,gmv,contribution_margin,margin_per_customer,spend,cac,ltv_cac_ratio,acquisition_share_of_first_margin,break_even_cac,cac_ceiling_at_3x
+organic_search,False,24851,3504180.74,399578.28,16.08,,,,,16.08,5.36
+paid_search,True,20450,2921657.94,333515.69,16.31,238203.44,11.65,1.4,0.714,16.31,5.44
+paid_social,True,16515,2339209.66,266811.33,16.16,185942.56,11.26,1.43,0.697,16.16,5.39
+direct,False,14035,1998081.37,227983.83,16.24,,,,,16.24,5.41
+marketplace_referral,False,9166,1266886.91,144172.95,15.73,,,,,15.73,5.24
+email_crm,True,7360,1034955.71,117997.99,16.03,27551.85,3.74,4.28,0.233,16.03,5.34

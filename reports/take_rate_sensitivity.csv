@@ -1,0 +1,7 @@
+take_rate,margin_per_customer,break_even_cac,cac_ceiling_at_3x,modelled
+0.2,23.23,23.23,7.74,False
+0.175,19.69,19.69,6.56,False
+0.15,16.15,16.15,5.38,True
+0.125,12.61,12.61,4.2,False
+0.1,9.07,9.07,3.02,False
+0.08,6.24,6.24,2.08,False

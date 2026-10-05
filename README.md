@@ -3,7 +3,7 @@
 <p align="center">
   <img alt="Method stage: scale" src="https://img.shields.io/badge/stage-scale-5B6CFF?style=flat-square&labelColor=050505">
   <img alt="DuckDB and SQL" src="https://img.shields.io/badge/DuckDB-SQL-7E8791?style=flat-square&labelColor=050505">
-  <img alt="Tests: 23" src="https://img.shields.io/badge/tests-23-7E8791?style=flat-square&labelColor=050505">
+  <a href="https://github.com/arielabade/unit-economics-olist/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/arielabade/unit-economics-olist/actions/workflows/tests.yml/badge.svg"></a>
   <img alt="Data: real orders, simulated channels" src="https://img.shields.io/badge/data-real_%2B_simulated_channels-C8B680?style=flat-square&labelColor=050505">
 </p>
 
@@ -11,7 +11,32 @@
 15% take rate that first order leaves R$ 16.13 of margin, and paid search spends 71% of it to acquire
 the customer.
 
-<p align="center"><img alt="97.0% buy exactly once; R$16.13 first-order margin ceiling; paid search CAC consumes 71% of it" src="assets/brand/kpis.svg" width="100%"></p>
+<p align="center"><img alt="3.00% of 93,358 customers ever place a second order; R$16.13 first-order margin ceiling; paid search consumes 71% of it" src="assets/figures/headline.svg" width="100%"></p>
+
+<p align="center"><img alt="LTV/CAC by paid channel: email_crm 4.28x clears the 3x target, paid_social 1.43x and paid_search 1.40x do not" src="assets/figures/channel_economics.svg" width="100%"></p>
+
+> **Decision.** Raise margin per order before raising paid budget, and shift budget toward email/CRM
+> — after checking whether CRM is acquiring customers or taking credit for demand that already existed.
+
+<details>
+<summary><b>What is in this repository</b></summary>
+
+| | |
+| --- | --- |
+| **The question** | Which acquisition channels bring customers worth more than they cost, in a business that keeps a commission rather than the sale? |
+| **The data** | 99,441 real Olist orders. Acquisition channel and media spend are SIMULATED — the framework is the deliverable, not a claim about Olist's marketing. |
+| **The method** | DuckDB SQL over a parameterised margin model, with every assumption in one file. |
+| **The output** | A CAC ceiling per channel, and the take rate at which paid acquisition stops working. |
+
+```
+sql/        staging → customer economics → channel economics, in order
+src/        ingest, simulated channels, pipeline, metric formulas, roll-up, figures
+tests/      formulas, simulation reproducibility, the anti-circularity guard
+reports/    committed result tables, which the figures read
+app/        Streamlit dashboard
+```
+
+</details>
 
 <p align="center"><img alt="Context, problem, strategy and result of the case" src="assets/brand/arc.svg" width="100%"></p>
 
@@ -66,6 +91,20 @@ worth more than they cost*. That needs a margin model, not a revenue model.
 | **Budget lags revenue by one month** | Sizing spend from acquired customers makes CAC constant by construction. A test pins the signature so spend can never depend on acquisitions. |
 | **Launch months excluded** | 2016-09 and 2016-12 have one order each and produce CAC in the thousands. |
 
+### The pipeline
+
+```mermaid
+flowchart LR
+  A["Olist CSVs<br/>row counts asserted"] --> B["sql/01_staging"]
+  S["Simulated channel<br/>+ monthly spend"] --> B
+  B --> C["sql/02_customer_economics<br/>margin per customer"]
+  C --> D["sql/03_channel_economics<br/>CAC, LTV/CAC, ceilings"]
+  D --> E["reports/*.csv"]
+  E --> F["README figures"]
+  E --> G["Streamlit app"]
+  A -. "row count mismatch" .-> X(["fail the run"])
+```
+
 ### Metrics
 
 ```
@@ -90,10 +129,10 @@ Every assumption lives in [`src/unit_economics/config.py`](src/unit_economics/co
 
 ## 04 — Result
 
-<p align="center"><img alt="LTV/CAC by paid channel: email_crm 4.28x, paid_social 1.43x, paid_search 1.40x; only email clears the 3x target" src="assets/brand/chart.svg" width="100%"></p>
-
 **Out of 93,358 customers with a delivered order, only 3.00% ever place a second one.** There is no
 second purchase to recover acquisition cost from, so the first-order margin is a hard ceiling:
+
+<p align="center"><img alt="97% of customers place exactly one delivered order; the remaining 3% spread thinly across two to six orders" src="assets/figures/repeat_purchase.svg" width="100%"></p>
 
 | Target LTV/CAC | Maximum CAC the business can pay |
 | --- | --- |
@@ -122,8 +161,12 @@ make organic the best channel in every table.
 
 - **Channel and spend are simulated.** No conclusion about Olist's real channels follows. The
   framework is the deliverable.
-- **The take rate is assumed, and the conclusion is sensitive to it.** Average GMV per customer is
-  R$ 141.43:
+- **The take rate is assumed, and the conclusion is sensitive to it.** Below roughly a 12% take
+  rate, paid search and paid social stop paying for themselves:
+
+  <p align="center"><img alt="Break-even CAC rises with the take rate; paid search and paid social CAC lines are crossed at an 11.8% take rate" src="assets/figures/take_rate_sensitivity.svg" width="100%"></p>
+
+  Average GMV per customer is R$ 141.43:
 
   | Take rate | Break-even CAC | Paid channels that still clear it |
   | --- | --- | --- |
@@ -133,8 +176,7 @@ make organic the best channel in every table.
   | 10.0% | R$ 9.06 | email_crm only |
   | 8.0% | R$ 6.23 | email_crm only |
 
-  Below roughly 12%, paid search and paid social stop paying for themselves. Pin this number down
-  before acting.
+  Pin this number down before acting.
 - **LTV is observed, not predicted.** Later cohorts are censored, which biases LTV down. Predicting
   the uncensored value is the job of [clv-cohort-prediction](https://github.com/arielabade/clv-cohort-prediction).
 - **No incrementality.** CAC here is average cost, not incremental cost. See
@@ -156,6 +198,7 @@ pip install -e ".[dev]"
 python -m unit_economics.ingest      # downloads ~45MB and verifies row counts
 python -m unit_economics.pipeline    # builds the analysis, writes data/processed/
 pytest                               # 23 tests
+python -m unit_economics.figures     # refreshes reports/ and the README charts
 streamlit run app/streamlit_app.py   # dashboard
 ```
 
