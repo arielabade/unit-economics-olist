@@ -3,7 +3,7 @@
 <p align="center">
   <img alt="Method stage: scale" src="https://img.shields.io/badge/stage-scale-5B6CFF?style=flat-square&labelColor=050505">
   <img alt="DuckDB and SQL" src="https://img.shields.io/badge/DuckDB-SQL-7E8791?style=flat-square&labelColor=050505">
-  <a href="https://github.com/arielabade/unit-economics-olist/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/arielabade/unit-economics-olist/actions/workflows/tests.yml/badge.svg"></a>
+  <img alt="Tests: 23" src="https://img.shields.io/badge/tests-23-7E8791?style=flat-square&labelColor=050505">
   <img alt="Data: real orders, simulated channels" src="https://img.shields.io/badge/data-real_%2B_simulated_channels-C8B680?style=flat-square&labelColor=050505">
 </p>
 
