@@ -1,7 +1,7 @@
 [project]
 name = "unit-economics-olist"
-version = "0.1.0"
-description = "CAC, LTV, payback and contribution margin by acquisition channel on the Olist marketplace dataset"
+version = "0.2.0"
+description = "CAC, LTV, payback and contribution margin by acquisition channel for an online retailer, in DuckDB SQL"
 requires-python = ">=3.10"
 dependencies = [
     "duckdb>=1.0",
@@ -10,10 +10,15 @@ dependencies = [
     "pyarrow>=14.0",
     "streamlit>=1.30",
     "altair>=5.0",
+    "plotly>=5.20",
+    "matplotlib>=3.8",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.4"]
+# Reading the ecommerce MySQL. Not needed for tests, figures or the dashboard,
+# which work from the committed reports/.
+ingest = ["pymysql>=1.1"]
+dev = ["pytest>=7.4", "fonttools>=4.40"]
 
 [build-system]
 requires = ["setuptools>=68"]
