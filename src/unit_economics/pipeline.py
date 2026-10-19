@@ -8,6 +8,7 @@ wrote, so there is no warehouse to stand up to reproduce the project.
 The SQL files run in order, each building on the tables of the one before:
 
     01_staging  ->  02_customer_economics  ->  03_channel_economics
+                ->  04_channel_comparisons ->  05_retention
 """
 
 from __future__ import annotations
@@ -40,13 +41,20 @@ SQL_FILES = (
     "01_staging.sql",
     "02_customer_economics.sql",
     "03_channel_economics.sql",
+    "04_channel_comparisons.sql",
+    "05_retention.sql",
 )
 
 #: Tables written to data/processed after a build.
 OUTPUTS = (
     "customer_economics",
     "channel_monthly",
+    "channel_comparisons",
     "channel_cohort_curve",
+    "channel_ltv_curve",
+    "channel_retention",
+    "monthly_totals",
+    "month_events",
 )
 
 

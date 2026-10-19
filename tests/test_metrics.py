@@ -98,3 +98,8 @@ def test_rates_are_ratios_of_sums_not_means_of_rates():
     # 300): CAC is 10,000 / 310, not the mean of 100 and 30.
     assert ratio_of_sums([1_000, 9_000], [10, 300]) == pytest.approx(10_000 / 310)
     assert ratio_of_sums([1.0], [0]) is None
+
+
+def test_ratio_of_sums_skips_missing_values():
+    # A month with spend and nobody acquired has no margin to add.
+    assert ratio_of_sums([259.0, float("nan"), None], [2, 0, 0]) == pytest.approx(129.5)

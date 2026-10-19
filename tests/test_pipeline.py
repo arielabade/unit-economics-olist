@@ -27,7 +27,7 @@ def _one(con, sql):
 
 def _monthly(con, channel, month):
     frame = con.execute(
-        "SELECT * FROM channel_monthly WHERE channel = ? AND month = ?", [channel, month]
+        "SELECT * FROM channel_comparisons WHERE channel = ? AND month = ?", [channel, month]
     ).df()
     assert len(frame) == 1, (channel, month)
     return frame.iloc[0]
@@ -159,7 +159,27 @@ def test_payback_is_null_when_the_cohort_has_not_repaid(con):
     assert pd.isna(_monthly(con, "paid_social", "2024-01").payback_months)
 
 
+def test_rollups_are_ratios_of_sums(con):
+    row = _monthly(con, "paid_total", "2024-01")
+    # R$250 of spend over 2 customers: 125, not the mean of 150 and 80 (115).
+    assert row.spend == 250.0
+    assert row.new_customers == 2
+    assert row.cac == pytest.approx(125.0)
+    store = _monthly(con, "all", "2024-01")
+    assert store.new_customers == 3  # paid_social, generic search, direct
+    assert store.cac == pytest.approx(250.0 / 3)
 
+
+def test_month_over_month_change(con):
+    row = _monthly(con, "paid_social", "2024-02")
+    assert row.spend_prev_month == 150.0
+    assert row.spend_mom == pytest.approx(50.0 / 150.0 - 1)
+
+
+def test_months_are_marked_by_the_stores_seasonal_campaigns(con):
+    events = dict(con.execute("SELECT month, events FROM month_events").fetchall())
+    assert events.get("2024-11") == "Black Friday 2024"
+    assert "2024-01" not in events
 
 
 def test_small_samples_are_flagged(con):
@@ -184,9 +204,21 @@ def test_spend_does_not_depend_on_acquisitions(tmp_path):
     """
     base = connect(Settings(), build_raw(tmp_path / "base"))
     more = connect(Settings(), build_raw(tmp_path / "more", extra_orders=9))
-    query = "SELECT spend, new_customers, cac FROM channel_monthly WHERE channel = 'paid_social' AND month = '2024-01'"
+    query = "SELECT spend, new_customers, cac FROM channel_comparisons WHERE channel = 'paid_social' AND month = '2024-01'"
     spend_base, customers_base, cac_base = base.execute(query).fetchone()
     spend_more, customers_more, cac_more = more.execute(query).fetchone()
     assert spend_more == spend_base == 150.0
     assert (customers_base, customers_more) == (1, 10)
     assert cac_more == pytest.approx(cac_base / 10)
+
+
+def test_sql_and_python_agree_on_channel_payback(raw_dir):
+    from unit_economics.pipeline import build
+    from unit_economics.summary import channel_summary
+
+    outputs = build(Settings(), raw_dir, write=False)
+    python = channel_summary(outputs["channel_comparisons"], outputs["channel_ltv_curve"]).set_index("channel")
+    sql = outputs["channel_retention"].set_index("channel")
+    for channel in ("paid_search_generic", "paid_social", "paid_total"):
+        left, right = python.loc[channel, "payback_months"], sql.loc[channel, "payback_months"]
+        assert (pd.isna(left) and pd.isna(right)) or left == right, channel

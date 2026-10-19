@@ -137,9 +137,14 @@ def ratio_of_sums(numerators: Iterable[float], denominators: Iterable[float]) ->
 
     Averaging monthly CACs gives a quiet month with 20 customers the same say
     as Black Friday with 1,800. Pooling the sums weights each month by what
-    actually happened in it.
+    actually happened in it. Missing values (a month with spend and no new
+    customer has no first-order margin) are skipped, not propagated.
     """
-    top, bottom = sum(numerators), sum(denominators)
+    top, bottom = _sum_present(numerators), _sum_present(denominators)
     if bottom == 0:
         return None
     return top / bottom
+
+
+def _sum_present(values: Iterable[float | None]) -> float:
+    return sum(v for v in values if v is not None and v == v)  # v != v only for NaN

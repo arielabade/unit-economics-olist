@@ -115,7 +115,10 @@ joined AS (
         a.margin_in_horizon,
         a.orders_in_horizon,
         a.repeat_90d,
-        COALESCE(a.is_mature, FALSE)                                         AS is_mature,
+        -- Maturity belongs to the month, not to whoever was acquired in it: a
+        -- paid channel that spent and acquired nobody still has a mature month.
+        (strptime(k.month, '%Y-%m') + to_months(getvariable('ltv_horizon_months')::INTEGER))
+            <= date_trunc('month', getvariable('data_end')::DATE)            AS is_mature,
         COALESCE(t.orders, 0)                                                AS orders,
         COALESCE(t.revenue, 0)                                               AS revenue,
         COALESCE(t.contribution_margin, 0)                                   AS contribution_margin,
