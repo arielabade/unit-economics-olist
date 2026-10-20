@@ -81,6 +81,8 @@ def apply_theme() -> None:
             "font.family": "sans-serif",
             "font.sans-serif": stack,
             "svg.fonttype": "path",
+            # Same figure, same bytes: no random element ids between runs.
+            "svg.hashsalt": "abade",
             # "R$ 278 against R$ 79" is money, not a formula between two $.
             "text.parse_math": False,
             "figure.facecolor": "none",
@@ -391,6 +393,6 @@ def save(fig, path: Path | str, pad: float = 0.34) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, format="svg", bbox_inches="tight", pad_inches=pad,
-                transparent=True)
+                transparent=True, metadata={"Date": None})
     plt.close(fig)
     return path

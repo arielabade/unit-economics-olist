@@ -99,7 +99,9 @@ def run_sql_file(con: duckdb.DuckDBPyConnection, name: str) -> None:
 def connect(settings: Settings = Settings(), raw_dir: Path = DATA_DIR,
             upto: str | None = None) -> duckdb.DuckDBPyConnection:
     """An in-memory database with every SQL file run, up to ``upto`` inclusive."""
-    con = duckdb.connect()
+    # One thread: parallel aggregation adds floats in a different order on
+    # every run, which moves the last cent of a sum. Same input, same bytes.
+    con = duckdb.connect(config={"threads": 1})
     for key, value in settings.sql_variables(raw_dir).items():
         con.execute(f"SET VARIABLE {key} = ?", [value])
     events = pd.DataFrame(

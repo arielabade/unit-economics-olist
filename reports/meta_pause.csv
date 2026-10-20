@@ -1,31 +1,31 @@
 period,channel,label,month_before,month_of,new_customers_before,new_customers_during,spend_before,spend_during
-pausa 2025,all,Loja inteira,2025-07,2025-08,1419.0,932.0,121828.76000000001,90694.41
+pausa 2025,all,Loja inteira,2025-07,2025-08,1419.0,932.0,121828.76000000002,90694.41
 pausa 2025,direct,Direto,2025-07,2025-08,144.0,136.0,,
 pausa 2025,email,E-mail,2025-07,2025-08,3.0,4.0,,
 pausa 2025,organic_search,Busca orgânica,2025-07,2025-08,228.0,167.0,,
 pausa 2025,organic_social,Social orgânico,2025-07,2025-08,146.0,99.0,,
-pausa 2025,paid_search_brand,Google Busca (marca),2025-07,2025-08,149.0,84.0,3968.0400000000004,3992.8899999999994
-pausa 2025,paid_search_generic,Google Busca (genérica),2025-07,2025-08,86.0,70.0,17384.870000000003,17587.17
+pausa 2025,paid_search_brand,Google Busca (marca),2025-07,2025-08,149.0,84.0,3968.0400000000004,3992.8900000000003
+pausa 2025,paid_search_generic,Google Busca (genérica),2025-07,2025-08,86.0,70.0,17384.87,17587.17
 pausa 2025,paid_shopping,Google Shopping,2025-07,2025-08,0.0,0.0,,
-pausa 2025,paid_social,Meta Ads,2025-07,2025-08,274.0,100.0,62155.49999999999,30878.960000000003
-pausa 2025,paid_total,Canais pagos (total),2025-07,2025-08,637.0,369.0,121828.76000000001,90694.41
-pausa 2025,paid_video,Google Demand Gen (vídeo),2025-07,2025-08,1.0,1.0,11882.060000000001,11952.129999999997
-pausa 2025,performance_max,Google Performance Max,2025-07,2025-08,127.0,114.0,26438.290000000005,26283.260000000002
+pausa 2025,paid_social,Meta Ads,2025-07,2025-08,274.0,100.0,62155.50000000002,30878.959999999992
+pausa 2025,paid_total,Canais pagos (total),2025-07,2025-08,637.0,369.0,121828.76000000002,90694.41
+pausa 2025,paid_video,Google Demand Gen (vídeo),2025-07,2025-08,1.0,1.0,11882.060000000001,11952.13
+pausa 2025,performance_max,Google Performance Max,2025-07,2025-08,127.0,114.0,26438.290000000005,26283.26000000001
 pausa 2025,referral,Sites de referência,2025-07,2025-08,30.0,17.0,,
 pausa 2025,untracked,Sem rastreio,2025-07,2025-08,213.0,130.0,,
 pausa 2025,whatsapp,WhatsApp,2025-07,2025-08,18.0,10.0,,
-mesmo período 2024,all,Loja inteira,2024-07,2024-08,1034.0,996.0,108719.57999999999,110628.68
+mesmo período 2024,all,Loja inteira,2024-07,2024-08,1034.0,996.0,108719.57999999999,110628.68000000002
 mesmo período 2024,direct,Direto,2024-07,2024-08,89.0,95.0,,
 mesmo período 2024,email,E-mail,2024-07,2024-08,4.0,3.0,,
 mesmo período 2024,organic_search,Busca orgânica,2024-07,2024-08,168.0,166.0,,
 mesmo período 2024,organic_social,Social orgânico,2024-07,2024-08,109.0,102.0,,
-mesmo período 2024,paid_search_brand,Google Busca (marca),2024-07,2024-08,94.0,96.0,2964.820000000001,3189.18
-mesmo período 2024,paid_search_generic,Google Busca (genérica),2024-07,2024-08,89.0,57.0,19473.109999999997,19612.1
+mesmo período 2024,paid_search_brand,Google Busca (marca),2024-07,2024-08,94.0,96.0,2964.82,3189.1800000000007
+mesmo período 2024,paid_search_generic,Google Busca (genérica),2024-07,2024-08,89.0,57.0,19473.11,19612.10000000001
 mesmo período 2024,paid_shopping,Google Shopping,2024-07,2024-08,1.0,0.0,0.0,
-mesmo período 2024,paid_social,Meta Ads,2024-07,2024-08,231.0,205.0,64489.18000000001,65569.23999999999
-mesmo período 2024,paid_total,Canais pagos (total),2024-07,2024-08,490.0,457.0,108719.57999999999,110628.68
+mesmo período 2024,paid_social,Meta Ads,2024-07,2024-08,231.0,205.0,64489.179999999986,65569.24
+mesmo período 2024,paid_total,Canais pagos (total),2024-07,2024-08,490.0,457.0,108719.57999999999,110628.68000000002
 mesmo período 2024,paid_video,Google Demand Gen (vídeo),2024-07,2024-08,0.0,0.0,,
-mesmo período 2024,performance_max,Google Performance Max,2024-07,2024-08,75.0,99.0,21792.46999999999,22258.159999999996
+mesmo período 2024,performance_max,Google Performance Max,2024-07,2024-08,75.0,99.0,21792.469999999998,22258.16
 mesmo período 2024,referral,Sites de referência,2024-07,2024-08,20.0,25.0,,
 mesmo período 2024,untracked,Sem rastreio,2024-07,2024-08,142.0,139.0,,
 mesmo período 2024,whatsapp,WhatsApp,2024-07,2024-08,12.0,9.0,,
