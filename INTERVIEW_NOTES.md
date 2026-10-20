@@ -1,124 +1,78 @@
 # Notas para entrevista — unit-economics-olist
 
-Documento interno. Não faz parte da documentação pública do projeto.
+Documento interno. Não faz parte da documentação pública do projeto. Os números citados aqui vêm de
+`reports/headline.csv`; se mudarem, regere com `python -m unit_economics.reports`.
 
 ---
 
 ## As 3 decisões técnicas mais importantes
 
-### 1. Calcular margem sobre a comissão, não sobre o GMV
+### 1. Margem de varejo sobre custos reais, não sobre comissão
 
-**O que fiz:** modelei a margem de contribuição como `GMV × take_rate − GMV × taxa_de_pagamento −
-custo_de_suporte`, em vez de aplicar um percentual de margem sobre o GMV.
+**O que fiz:** a fonte passou a ser uma loja própria (Tecelã Tecidos, dados simulados do repositório
+`ecommerce`), não um marketplace. A margem de contribuição de cada pedido é venda − custo do produto − frete
+pago à transportadora − reembolsos + custo de itens que voltaram ao estoque − taxa de pagamento − embalagem.
 
-**Por quê:** o Olist é um marketplace. Ele não fica com os R$ 141 de um pedido, fica com a comissão
-sobre ele. Tratar marketplace como varejista é o erro mais comum nessa análise e infla a economia do
-negócio por aproximadamente o inverso do take rate — no caso, cerca de 6,7x. Com GMV médio de
-R$ 141,43 por cliente, a margem real é R$ 16,13, não R$ 141.
+**Por quê:** varejo paga pela mercadoria e pelo frete. A fórmula de take rate da versão Olist estaria errada
+aqui por ordem de grandeza. Tudo que o dataset registra é usado; só taxa de pagamento e custo por pedido são
+premissas, e a sensibilidade mostra que elas mexem no LTV/CAC pago em no máximo 0,06.
 
-**O trade-off:** o take rate não é publicado pelo Olist. Troquei um erro de ordem de grandeza por uma
-premissa explícita e documentada. Por isso coloquei a tabela de sensibilidade no README: abaixo de
-~12% de take rate, paid search e paid social deixam de se pagar.
+**Achado que veio disso:** o frete grátis é custo. A loja pagou R$ 0,95 mi a mais às transportadoras do que
+cobrou dos clientes (2,5% da receita).
 
-### 2. Orçamento de mídia atrelado à receita do mês anterior, nunca às aquisições do mês
+### 2. Canal e investimento lidos, nunca derivados — a trava anti-circularidade continua
 
-**O que fiz:** o gasto simulado é um percentual declarado da receita líquida do **mês anterior**.
+**O que fiz:** canal = atribuição do 1º pedido pago (last click, a mesma regra do `dim_clientes` da fonte),
+com busca do Google separada em marca e genérica. Investimento = gasto diário de Meta e Google no mesmo código
+de canal. A simulação por hash e o orçamento como fatia da receita foram removidos.
 
-**Por quê:** a tentação é simular o gasto como `clientes_adquiridos × CPA_alvo`. Se eu fizesse isso,
-o CAC calculado seria exatamente o CPA_alvo por construção — o modelo devolveria a premissa que
-recebeu, e a análise inteira seria circular. O lag de um mês também é como orçamento se define na
-prática: você planeja com base no resultado do período fechado.
+**Como protegi:** um teste roda o SQL real duas vezes, com 9 clientes a mais adquiridos pela Meta: o
+investimento da Meta não pode mudar e o CAC tem que cair 10 vezes. Se alguém fizer o gasto depender de
+aquisições, o CAC vira constante por construção e o teste quebra.
 
-**Como protegi:** há um teste (`test_spend_is_independent_of_acquisitions`) que trava a assinatura da
-função. Se alguém algum dia fizer a simulação de gasto enxergar o número de clientes, o teste quebra.
+### 3. Indefinido continua indefinido, e taxa é razão de somas
 
-### 3. Manter "indefinido" como indefinido, em vez de virar zero
-
-**O que fiz:** canais sem linha de mídia (orgânico, direto, referral) recebem `None` como gasto e
-ficam com CAC nulo. Canal pago que gastou R$ 0,00 num mês recebe CAC igual a 0,00.
-
-**Por quê:** são coisas diferentes. Se orgânico reportar CAC zero, ele vira o canal de melhor
-performance em qualquer tabela ordenada por LTV/CAC — e alguém vai usar isso para justificar cortar
-mídia paga. "Não tem CAC" e "tem CAC zero" levam a decisões opostas.
-
-**Detalhe que apareceu no teste:** o pandas converte `None` em `NaN` numa coluna float, então o teste
-não pode afirmar `is None`. Reescrevi para afirmar o invariante que realmente importa: `pd.isna(cac)`
-**e** `cac != 0`.
+Canal sem investimento registrado (orgânico, direto, e-mail, sem rastreio) tem CAC nulo, não zero. Toda taxa
+é total ÷ total: um mês fraco com 20 clientes não pesa o mesmo que a Black Friday. O LTV só existe para coortes
+observadas pelos 12 meses inteiros, e o LTV/CAC usa o investimento dessas mesmas coortes.
 
 ---
 
 ## 5 perguntas prováveis, com resposta
 
-### 1. "Você simulou o gasto de mídia. Então que valor isso tem?"
+### 1. "Os dados são simulados. Que valor isso tem?"
 
-Separo os dois tipos de resultado, e isso está no README.
+O framework é o entregável. A diferença em relação à versão Olist é que agora nada é simulado por mim: canal e
+investimento vêm do dataset, que é determinístico (seed fixa) e conferido na ingestão por contagem de linhas e
+somas de controle. O projeto reconcilia ao centavo com os marts do dbt da própria fonte. O dashboard e o
+README dizem que os dados são simulados em destaque.
 
-O achado de retenção — **97,00% dos clientes compram uma única vez** — vem de dado real do Olist e não
-depende de nenhuma simulação. É ele que governa a tese: não existe segunda compra para recuperar o
-CAC, então o CAC precisa fechar no primeiro pedido, e a margem do primeiro pedido vira teto duro.
+### 2. "LTV/CAC de 1,47 é bom?"
 
-Os números por canal demonstram o framework de medição. Nunca afirmo que são a performance real do
-Olist, e deixo isso explícito no README, na docstring do módulo e no dashboard.
+Está acima do empate e abaixo do 3x de planejamento. O mais útil é o payback: a mídia paga leva 6 meses para
+se pagar, porque o primeiro pedido deixa R$ 86 de margem contra R$ 209 de CAC. Quem paga a aquisição é a
+recompra: 58% voltam em 12 meses.
 
-Se a pergunta for "por que não usou dado real de canal?", a resposta é que o Olist não publica. A
-alternativa seria inventar e não declarar, que é pior.
+### 3. "Então corta a Meta?"
 
-### 2. "Por que DuckDB e SQL em vez de pandas?"
+Não pelo último clique. A Meta é 58% da verba e só empata em 12 meses (1,00x), mas na pausa de agosto/2025 a
+loja perdeu 34% dos clientes novos de julho para agosto (4% no mesmo período de 2024), e os outros canais
+perderam mais clientes (313) do que a própria Meta (174). Isso sugere que ela gera demanda que busca de marca e
+orgânico recolhem. O próximo passo é um holdout por região e usar CAC incremental como teto.
 
-Três razões. A primeira é que o trabalho é junção e agregação sobre ~112 mil linhas, que é exatamente
-o que SQL faz bem. A segunda é revisabilidade: um analista de negócio consegue ler
-`02_customer_economics.sql` e conferir a fórmula de margem sem saber Python — e a fórmula de margem é
-a parte que mais importa auditar. A terceira é que DuckDB roda in-process, então quem clonar o repo
-reproduz tudo sem subir warehouse nenhum.
+### 4. "Qual premissa mais muda a conclusão?"
 
-Detalhe de implementação que vale citar: o DuckDB não aceita parâmetro preparado dentro de
-`CREATE VIEW`. Em vez de formatar string no SQL a partir do Python, publico as premissas como
-variáveis de sessão (`SET VARIABLE`) e leio com `getvariable()`. Os arquivos `.sql` continuam
-parametrizados e legíveis sozinhos.
-
-### 3. "Esse LTV está certo? O cliente adquirido em agosto de 2018 teve quanto tempo para voltar?"
-
-Está certo como **LTV observado**, e essa é a limitação. O dataset termina em 2018-08, então coortes
-recentes são estruturalmente censuradas: tiveram menos tempo de janela e o LTV observado delas é
-enviesado para baixo.
-
-Isso importa menos aqui do que importaria em outro negócio, porque com 97% de compra única não há
-muito o que observar depois do primeiro pedido. Mas é uma limitação real e está declarada no README.
-É exatamente o problema que o projeto `clv-cohort-prediction` resolve, com BG/NBD e avaliação em
-holdout.
-
-### 4. "LTV/CAC de 1,4 é bom ou ruim?"
-
-Está acima do break-even e bem abaixo do que se costuma planejar. O 3x é convenção de mercado, não
-lei — mas serve de referência, e nessa convenção o CAC teto cairia de R$ 16,13 para R$ 5,38.
-
-O número mais útil para a conversa não é o ratio, é este: paid search consome **71,4% da margem
-inteira do primeiro pedido** para adquirir o cliente. Como ele não volta, sobra 28,6% de margem por
-cliente adquirido para pagar todo o resto da operação.
-
-A recomendação que tiro disso tem ordem: primeiro aumentar a margem por pedido (take rate, ticket
-médio, custo de servir), depois mexer no orçamento. Escalar mídia com 1,4x só multiplica um problema
-de margem.
-
-E uma ressalva honesta: email/CRM dá 4,28x, mas CRM frequentemente captura demanda que já existia. O
-número dele é o que eu testaria por incrementalidade antes de realocar verba.
+O horizonte de recompra contado no LTV: 6 meses dá 1,04x, 24 meses dá 2,11x. Como coortes antigas eram mais
+baratas, também meço com as coortes fixas (1,65x em 12 meses → 2,11x em 24). Modelo de atribuição vem em
+segundo (1,21x a 1,47x). Custos estimados quase não mexem.
 
 ### 5. "Como você sabe que os dados estão certos?"
 
-Três camadas.
-
-Na ingestão, `verify()` confere a contagem de linhas de cada arquivo contra os números publicados do
-dataset. Se o mirror for truncado ou trocado, o run falha em vez de mudar o resultado em silêncio.
-
-Na modelagem, a decisão de identidade: o Olist tem `customer_id` (um por **pedido**) e
-`customer_unique_id` (um por **pessoa**). São 99.441 contra 96.096. Quem agrupa por `customer_id`
-conclui que a taxa de recompra é zero, porque cada pedido vira um cliente novo. Essa é a pegadinha
-clássica do dataset e é o que eu checo primeiro em qualquer base transacional.
-
-Nos testes, 23 casos cobrindo as fórmulas, a reprodutibilidade da simulação e a trava anti-
-circularidade. Incluindo um teste de que margem pode ser **negativa** em pedidos muito pequenos — um
-pedido de R$ 10 não cobre o custo fixo de suporte, e o modelo precisa dizer isso em vez de truncar em
-zero.
+Três camadas. Na ingestão, contagem de linhas e somas de controle de cada tabela contra o gerador com seed
+fixa. Na modelagem, as armadilhas do dataset tratadas: contas duplicadas pelo CPF, pedidos de teste, clientes
+legados que não são "novos", pedidos sem rastreio que não são redistribuídos. Nos testes, o SQL real roda numa
+cópia montada à mão das tabelas da fonte, com cada regra coberta, e README e dashboard são testados contra os
+mesmos `reports/`.
 
 ---
 
@@ -126,11 +80,12 @@ zero.
 
 | | |
 | --- | --- |
-| Clientes com pedido entregue | 93.358 |
-| Compra única | 97,00% |
-| GMV médio por cliente | R$ 141,43 |
-| Margem de contribuição por cliente | R$ 16,13 |
-| CAC teto no break-even | R$ 16,13 |
-| CAC teto a 3x | R$ 5,38 |
-| LTV/CAC agregado dos canais pagos | 1,59 |
-| Janela de análise | 2017-02 a 2018-08 |
+| Janela | 2023-10 a 2026-09 (36 meses) |
+| Receita / margem de contribuição | R$ 38,24 mi / R$ 16,38 mi (42,8%) |
+| Investimento em mídia | R$ 4,24 mi |
+| Clientes novos / CAC da loja | 44.532 / R$ 95 |
+| CAC pago / LTV 12 meses pago | R$ 209 / R$ 297 |
+| LTV/CAC pago / payback | 1,47x / 6 meses |
+| Meta: verba / LTV/CAC / payback | 58% / 1,00x / 14 meses |
+| CAC pago ano 1 → ano 3 | R$ 170 → R$ 222 (verba +48%, clientes pagos +13%) |
+| Recompra em 90 dias / 12 meses | 40% / 58% |
