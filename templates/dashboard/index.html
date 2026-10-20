@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quanto custa e quanto rende cada cliente, por canal · Tecelã Tecidos</title>
+<meta name="description" content="Quanto custa trazer um cliente em cada canal de mídia, quanto ele devolve e em quanto tempo. Loja online de tecidos, [[period]]. Dados simulados.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#050505">
+<link rel="canonical" href="https://arielabade.github.io/unit-economics-olist/dashboard/">
+<meta property="og:title" content="Quanto custa e quanto rende cada cliente, por canal">
+<meta property="og:description" content="Cada R$ 1 em mídia paga volta como [[paid_ltv_cac]] de margem em 12 meses. Dados simulados.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://arielabade.github.io/unit-economics-olist/dashboard/">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=[[version_css]]">
+<script>
+  // Before first paint: the chosen theme, so the page never flashes the wrong one.
+  (function () {
+    try { var t = localStorage.getItem("ue-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
+  })();
+</script>
+<script src="app.js?v=[[version_js]]" data-plotly="[[plotly_file]]" defer></script>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="hero" id="topo">
+  <div class="wrap">
+    <div class="brand-row">
+      <span class="brand">[[symbol]]<span class="brand-name">ABADE</span></span>
+      <span class="eyebrow">Custo e retorno de cada cliente, por canal</span>
+    </div>
+    <h1>A mídia paga se paga, mas devagar, e a Meta mal empata</h1>
+    <p class="lede">Quanto custa trazer um cliente em cada canal, quanto ele devolve e em quanto tempo, para a Tecelã Tecidos,
+      de [[period_long]].</p>
+    <dl class="facts">
+      <div><dt>Vendas</dt><dd>[[revenue]]</dd></div>
+      <div><dt>Investimento em Meta e Google</dt><dd>[[spend]]</dd></div>
+      <div><dt>Clientes novos</dt><dd>[[new_customers]]</dd></div>
+      <div><dt>Período</dt><dd>[[months]] meses</dd></div>
+    </dl>
+    <p class="notice" role="note"><strong>Dados simulados.</strong> A Tecelã Tecidos é uma loja fictícia. Os dados foram gerados
+      a partir do funcionamento de um e-commerce real e não descrevem nenhuma empresa.</p>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Seções do relatório">
+  <div class="wrap toc-inner">
+    <ol>
+      <li><a href="#contexto">Contexto</a></li>
+      <li><a href="#resumo">Resumo</a></li>
+      <li><a href="#meses">Mês a mês</a></li>
+      <li><a href="#canais">Canais</a></li>
+      <li><a href="#unit-economics">Teto de CAC</a></li>
+      <li><a href="#sensibilidade">Sensibilidade</a></li>
+      <li><a href="#recomendacao">Recomendação</a></li>
+    </ol>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false" hidden>
+      <span aria-hidden="true" class="theme-icon"></span><span class="theme-label">Tema escuro</span>
+    </button>
+  </div>
+</nav>
+
+<main id="conteudo" class="wrap">
+
+<!-- ========================================================== 01 Contexto -->
+<section id="contexto" aria-labelledby="h-contexto">
+  <p class="kicker">01 · Contexto</p>
+  <h2 id="h-contexto">Antes dos números: que loja é essa, o que foi medido e de onde vem cada dado</h2>
+
+  <div class="grid-3">
+    <article class="panel">
+      <h3>A loja</h3>
+      <p>Loja online de tecidos que vende por metro e em rolo para quem costura por hobby, costureiras, ateliês e
+        pequenas confecções. É <strong>varejo próprio</strong>: fica com a venda inteira e paga pela mercadoria e pelo frete.</p>
+      <p>Anuncia na <strong>Meta</strong> (Facebook e Instagram) e no <strong>Google</strong> (busca, Shopping, Performance Max e vídeo).
+        Os outros clientes chegam por busca orgânica, acesso direto, redes sociais, e-mail, WhatsApp e indicações.</p>
+    </article>
+    <article class="panel panel-accent">
+      <h3>A pergunta</h3>
+      <p class="question">Quais canais trazem clientes que valem mais do que custam, e em quanto tempo o investimento volta?</p>
+      <p>O que interessa não é qual canal traz <em>mais</em> clientes, e sim qual traz clientes que <em>pagam o que custaram</em>.
+        Por isso cada real investido aparece ao lado dos clientes que trouxe e da margem que eles geraram.</p>
+    </article>
+    <article class="panel">
+      <h3>A base</h3>
+      <ul class="plain">
+        <li><strong>[[orders]]</strong> pedidos pagos em [[months]] meses ([[period]])</li>
+        <li><strong>[[new_customers]]</strong> clientes novos, [[paid_share]] trazidos pela mídia paga</li>
+        <li><strong>[[revenue]]</strong> em vendas e <strong>[[spend]]</strong> investidos em mídia</li>
+        <li>Datas sazonais com campanha da loja: [[seasonal_events]]</li>
+      </ul>
+    </article>
+  </div>
+
+  <h3 class="sub-h">De onde vem cada número</h3>
+  <ul class="provenance">
+    <li class="prov prov-data">
+      <p class="prov-tag">Registrado no banco da loja</p>
+      <p>Pedidos, receita, descontos, custo de cada produto vendido, frete cobrado e frete pago à transportadora,
+        devoluções, o canal de cada cliente e o investimento diário em Meta e Google.</p>
+    </li>
+    <li class="prov prov-assumed">
+      <p class="prov-tag">Estimado (o banco não registra)</p>
+      <p>Taxa de pagamento: Pix [[fee_pix]], cartão [[fee_card]], boleto [[fee_boleto]]. Embalagem e atendimento:
+        [[order_cost]] por pedido. Mudar essas estimativas mexe pouco no resultado (no máximo [[costs_swing]] no LTV/CAC).</p>
+    </li>
+    <li class="prov prov-none">
+      <p class="prov-tag">Simulado pela análise</p>
+      <p>Nenhum número: canal e investimento vêm do banco. A loja em si é fictícia, e todo o banco é simulado.</p>
+    </li>
+  </ul>
+
+  <details class="explainer" id="como-ler">
+    <summary>Como ler: o que significa cada termo</summary>
+    <dl class="glossary">
+      <div><dt>CAC</dt><dd>Quanto custa trazer um cliente novo: investimento do canal ÷ clientes novos que ele trouxe.
+        Na mídia paga, <strong>[[ex_cac]]</strong>.</dd></div>
+      <div><dt>Margem de contribuição</dt><dd>O que sobra da venda depois de pagar produto, frete, devoluções, taxa e
+        embalagem, antes da mídia. De cada R$ 100 vendidos, <strong>R$ [[margin_per100]]</strong>.</dd></div>
+      <div><dt>LTV de 12 meses</dt><dd>A margem que um cliente gera no primeiro ano, somando todas as compras.
+        Cliente vindo da mídia paga: <strong>[[ex_ltv]]</strong>.</dd></div>
+      <div><dt>LTV/CAC</dt><dd>Quantas vezes o cliente devolve o que custou. 1x empata; 3x é a meta usual de planejamento.</dd></div>
+      <div><dt>Payback</dt><dd>Quantos meses de margem acumulada até cobrir o CAC, contando o mês da compra.</dd></div>
+      <div><dt>Teto de CAC</dt><dd>O máximo que vale pagar por cliente: o LTV para empatar, um terço dele para 3x
+        (na mídia paga, <strong>[[ex_ceiling3]]</strong>).</dd></div>
+    </dl>
+  </details>
+</section>
+
+<!-- ========================================================== 02 Resumo -->
+<section id="resumo" aria-labelledby="h-resumo">
+  <p class="kicker">02 · Resumo executivo</p>
+  <h2 id="h-resumo">Cada R$ 1 em mídia paga volta como R$ [[paid_ltv_cac_brl]] de margem em um ano. Quem paga a aquisição é a recompra.</h2>
+
+  <div class="summary">
+    <div class="hero-stat">
+      <p class="stat-label">Retorno da mídia paga em 12 meses</p>
+      <p class="hero-value">[[paid_ltv_cac]]</p>
+      <p class="stat-note">de margem para cada R$ 1 investido. 1x empata; a meta usual é 3x.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="stat-label">Custo por cliente na mídia paga</p><p class="stat-value">[[paid_cac]]</p>
+        <p class="stat-note">Loja inteira, todos os canais: [[blended_cac]]</p></div>
+      <div class="stat"><p class="stat-label">Tempo para se pagar</p><p class="stat-value">[[paid_payback]]</p>
+        <p class="stat-note">O 1º pedido deixa [[paid_first_margin]] de margem</p></div>
+      <div class="stat stat-warn"><p class="stat-label">Investimento que vai para a Meta</p><p class="stat-value">[[meta_share]]</p>
+        <p class="stat-note">e ela leva [[meta_payback_text]] para se pagar</p></div>
+      <div class="stat"><p class="stat-label">Clientes que voltam em 1 ano</p><p class="stat-value">[[repeat_12]]</p>
+        <p class="stat-note">[[repeat_90]] já em 90 dias</p></div>
+    </div>
+  </div>
+
+  <ol class="takeaways">
+    <li><strong>O cliente da mídia paga só se paga porque volta.</strong> O primeiro pedido deixa [[paid_first_margin]] de margem contra
+      [[paid_cac]] de custo; com as recompras do ano chega a [[paid_ltv]].</li>
+    <li><strong>Cada cliente da mídia paga está custando mais.</strong> O CAC subiu de [[cac_y1]] no 1º ano para [[cac_y3]] no 3º:
+      o investimento cresceu [[spend_growth]], os clientes trazidos por ele só [[paid_customers_growth]].</li>
+    <li><strong>A Meta parece pior do que é.</strong> Pelo último clique ela mal empata, mas quando foi pausada, em agosto/2025,
+      os outros canais tiveram [[pause_others]] clientes novos a menos, mais do que a própria Meta ([[pause_meta]] a menos).</li>
+  </ol>
+  <p class="jump"><a href="#recomendacao">Ver as quatro recomendações ↓</a></p>
+</section>
+
+<!-- ========================================================== 03 Meses -->
+<section id="meses" aria-labelledby="h-meses">
+  <p class="kicker">03 · Mês a mês</p>
+  <h2 id="h-meses">O investimento subiu [[spend_growth]] do 1º ao 3º ano; os clientes trazidos por ele, só [[paid_customers_growth]]</h2>
+
+  <div class="legend-key" role="group" aria-labelledby="legend-title">
+    <p class="legend-title" id="legend-title">Cada canal tem a mesma cor em todos os gráficos</p>
+    <ul class="chips">
+      <li><span class="swatch" style="--sw: var(--c-paid_total)"></span>Mídia paga (total)</li>
+      <li><span class="swatch" style="--sw: var(--c-paid_social)"></span>Meta Ads</li>
+      <li><span class="swatch" style="--sw: var(--c-paid_search_generic)"></span>Google Busca (genérica)</li>
+      <li><span class="swatch" style="--sw: var(--c-performance_max)"></span>Google Performance Max</li>
+      <li><span class="swatch" style="--sw: var(--c-paid_search_brand)"></span>Google Busca (marca)</li>
+      <li><span class="swatch" style="--sw: var(--c-paid_shopping)"></span>Google Shopping</li>
+      <li><span class="swatch" style="--sw: var(--c-unpaid)"></span>Sem mídia</li>
+    </ul>
+  </div>
+
+  <div class="grid-2">
+    <figure class="card" aria-labelledby="t-spend" aria-describedby="d-spend">
+      <figcaption><h3 id="t-spend">O investimento mensal foi de [[spend_first]] para [[spend_last]]</h3>
+        <p id="d-spend">Investimento em Meta e Google por mês, de [[period]]. Passe o mouse ou toque numa barra para ver a campanha sazonal do mês.</p></figcaption>
+      <div class="chart" data-chart="spend"></div>
+    </figure>
+    <figure class="card" aria-labelledby="t-customers" aria-describedby="d-customers">
+      <figcaption><h3 id="t-customers">…mas os clientes trazidos pela mídia paga ficaram no mesmo patamar</h3>
+        <p id="d-customers">Clientes novos por mês: os da mídia paga e os da loja inteira.</p></figcaption>
+      <div class="chart" data-chart="customers"></div>
+    </figure>
+  </div>
+  <details class="data-twin" open><summary>Ver os números por mês</summary>[[table_spend]]</details>
+
+  <figure class="card" aria-labelledby="t-cac" aria-describedby="d-cac">
+    <figcaption><h3 id="t-cac">A Meta é o canal pago mais caro em quase todos os meses</h3>
+      <p id="d-cac">Custo por cliente novo, por canal e mês. Toque ou clique na legenda para ligar e desligar canais (todos estão na tabela abaixo).
+        Círculos vazados: meses com menos de [[small_sample]] clientes no canal, amostra pequena demais para ler como tendência.</p></figcaption>
+    <div class="chart chart-tall" data-chart="cac"></div>
+  </figure>
+  <details class="data-twin" open><summary>Ver o CAC por canal e mês</summary>[[table_cac]]</details>
+
+  <div class="compare">
+    <div class="compare-head">
+      <div>
+        <h3 id="t-month">Um mês contra o anterior e contra o mesmo mês do ano passado</h3>
+        <p class="muted" id="month-caption">▲▼ em verde quando a mudança é boa para o negócio e em vermelho quando é ruim
+          (CAC subir é ruim; clientes subirem é bom). Canais sem investimento têm CAC indefinido, nunca zero.</p>
+      </div>
+      <label class="field">Mês
+        <select id="month-select" aria-controls="month-table-wrap">[[month_options]]</select>
+      </label>
+    </div>
+    <p class="sr-only" id="month-status" aria-live="polite"></p>
+    <p class="scroll-hint" aria-hidden="true">Deslize a tabela para o lado →</p>
+    <div class="table-wrap" id="month-table-wrap" tabindex="0" role="region" aria-labelledby="t-month" aria-describedby="month-caption">[[month_table]]</div>
+  </div>
+
+  <div class="callout" role="note" aria-labelledby="h-pausa">
+    <h3 id="h-pausa">Teste de pausa da Meta, agosto de 2025</h3>
+    <p>Com a prospecção da Meta pausada de 4 a 24 de agosto, os clientes novos da loja caíram <strong>[[pause_store]]</strong>
+      de julho para agosto. No mesmo período de 2024 a queda tinha sido de [[baseline_store]].</p>
+    <p>Os clientes creditados à Meta foram [[pause_meta]] a menos; os dos outros canais, <strong>[[pause_others]] a menos</strong>,
+      sobretudo busca pela marca, busca orgânica e pedidos sem rastreio. Sinal de que a Meta gera demanda que outros canais recolhem.
+      É um mês só: sinal, não prova.</p>
+  </div>
+</section>
+
+<!-- ========================================================== 04 Canais -->
+<section id="canais" aria-labelledby="h-canais">
+  <p class="kicker">04 · Comparação entre canais</p>
+  <h2 id="h-canais">O cliente volta igual, venha de onde vier. A diferença entre canais está no custo.</h2>
+
+  <div class="grid-2">
+    <figure class="card" aria-labelledby="t-ltvcac" aria-describedby="d-ltvcac">
+      <figcaption><h3 id="t-ltvcac">Só a busca pela marca passa de 3x, e ela recolhe quem já procurava a loja</h3>
+        <p id="d-ltvcac">Margem de 12 meses de cada cliente ÷ custo para trazê-lo, e a fatia do investimento de cada canal. O Demand Gen
+          fica de fora: [[video_spend]] trouxeram [[video_customers]] clientes.</p></figcaption>
+      <div class="chart" data-chart="ltvcac"></div>
+    </figure>
+    <figure class="card" aria-labelledby="t-retention" aria-describedby="d-retention">
+      <figcaption><h3 id="t-retention">Entre [[repeat_min]] e [[repeat_max]] dos clientes da mídia paga voltam em um ano, em qualquer canal</h3>
+        <p id="d-retention">Clientes que compraram de novo em até 12 meses, por canal de aquisição. A linha pontilhada marca a loja inteira.</p></figcaption>
+      <div class="chart" data-chart="retention"></div>
+    </figure>
+  </div>
+  <details class="data-twin" open><summary>Ver LTV/CAC e recompra por canal</summary>[[table_ltv_cac]][[table_retention]]</details>
+
+  <div class="table-head">
+    <div>
+      <h3 id="t-channels">Todos os canais, no período inteiro</h3>
+      <p class="muted">E-mail traz poucos clientes novos ([[email_customers]]) mas fecha [[email_orders]] pedidos: é canal de recompra,
+        não de aquisição. "Sem rastreio" são primeiros pedidos sem sessão no site (bloqueador de anúncios, WhatsApp): [[untracked_share]] dos clientes novos.</p>
+    </div>
+    <div class="segmented" role="group" aria-label="Mostrar canais">
+      <button type="button" data-filter="all" aria-pressed="true">Todos</button>
+      <button type="button" data-filter="paid" aria-pressed="false">Mídia paga</button>
+      <button type="button" data-filter="unpaid" aria-pressed="false">Sem mídia</button>
+    </div>
+  </div>
+  <p class="sr-only" id="sort-status" aria-live="polite"></p>
+  <p class="scroll-hint" aria-hidden="true">Deslize a tabela para o lado →</p>
+  <div class="table-wrap" tabindex="0" role="region" aria-labelledby="t-channels">[[channel_table]]</div>
+  <p class="footnote" id="channel-table-note">Pedidos, receita e margem são os atribuídos ao canal pelo último clique. ¹ O LTV/CAC
+    compara o LTV com o CAC das mesmas coortes (as que completaram 12 meses), por isso não é exatamente LTV ÷ CAC da tabela, que usa
+    o período inteiro. Toque ou clique no nome de uma coluna para ordenar.</p>
+</section>
+
+<!-- ========================================================== 05 Unit economics -->
+<section id="unit-economics" aria-labelledby="h-ue">
+  <p class="kicker">05 · Unit economics e teto de CAC</p>
+  <h2 id="h-ue">De cada R$ 100 vendidos, R$ [[margin_per100]] sobram antes da mídia e R$ [[after_media_per100]] depois</h2>
+
+  <div class="grid-2">
+    <figure class="card" aria-labelledby="t-waterfall" aria-describedby="d-waterfall">
+      <figcaption><h3 id="t-waterfall">Produto e frete levam mais da metade da venda</h3>
+        <p id="d-waterfall">Para onde vai cada R$ 100 vendidos. O frete grátis custa: a loja pagou [[freight_subsidy]] a mais às
+          transportadoras do que cobrou dos clientes. * estimado.</p></figcaption>
+      <div class="chart" data-chart="waterfall"></div>
+    </figure>
+    <figure class="card" aria-labelledby="t-ceiling" aria-describedby="d-ceiling">
+      <figcaption><h3 id="t-ceiling">Fora a busca pela marca, todo canal pago custa mais que o teto de 3x</h3>
+        <p id="d-ceiling">Cada linha liga o custo atual por cliente (●) ao teto para 3x (○): vermelha quando o custo passa do teto.
+          ◇ marca o teto para empatar.</p></figcaption>
+      <div class="chart" data-chart="ceiling"></div>
+    </figure>
+  </div>
+  <details class="data-twin" open><summary>Ver a conta de cada R$ 100 e os tetos por canal</summary>[[table_waterfall]][[table_ceiling]]</details>
+</section>
+
+<!-- ========================================================== 06 Sensibilidade -->
+<section id="sensibilidade" aria-labelledby="h-sens">
+  <p class="kicker">06 · Sensibilidade</p>
+  <h2 id="h-sens">A conclusão depende de quanto tempo de recompra você conta, não das estimativas de custo</h2>
+
+  <div class="grid-2">
+    <figure class="card" aria-labelledby="t-tornado" aria-describedby="d-tornado">
+      <figcaption><h3 id="t-tornado">Contar 6 ou 24 meses de recompra muda o retorno de [[horizon_low]] para [[horizon_high]]</h3>
+        <p id="d-tornado">LTV/CAC da mídia paga com uma premissa alterada por vez. O prazo é comparado nas mesmas [[same_count]] coortes;
+          as estimativas de custo, juntas, mexem no máximo [[costs_swing]].</p></figcaption>
+      <div class="chart" data-chart="tornado"></div>
+    </figure>
+    <figure class="card" aria-labelledby="t-horizon" aria-describedby="d-horizon">
+      <figcaption><h3 id="t-horizon">A mídia paga empata no [[paid_payback_n]]º mês e não chega a 3x nem em dois anos</h3>
+        <p id="d-horizon">Margem acumulada ÷ CAC, mês a mês depois da aquisição. Cada ponto usa as coortes observadas por aquele tempo;
+          o trecho claro usa menos de 12 coortes, as mais antigas, que custaram menos. Nas mesmas [[same_count]] coortes, o retorno vai de
+          [[same_12]] em 12 meses a [[same_24]] em 24 (a base inteira dá [[paid_ltv_cac]] em 12).</p></figcaption>
+      <div class="chart" data-chart="horizon"></div>
+    </figure>
+  </div>
+  <details class="data-twin" open><summary>Ver os números da sensibilidade</summary>[[table_tornado]][[table_horizon]]</details>
+</section>
+
+<!-- ========================================================== 07 Recomendação -->
+<section id="recomendacao" aria-labelledby="h-reco">
+  <p class="kicker">07 · Recomendação</p>
+  <h2 id="h-reco">Definir o prazo de retorno, medir a Meta de verdade e investir na recompra</h2>
+  <ol class="reco">
+    <li>
+      <h3>Definir o prazo de retorno aceitável antes de mexer no investimento</h3>
+      <p>Contando 6 meses de recompra, a mídia paga mal passa do empate ([[horizon_low]]); contando 24, rende [[horizon_high]], nas mesmas
+        coortes. Se o caixa aguenta esperar um ano, a mídia se justifica; se não, precisa encolher.</p>
+      <p class="reco-meta"><span>Como medir</span> LTV/CAC no prazo escolhido, por canal, todo mês.</p>
+    </li>
+    <li>
+      <h3>Medir o efeito real da Meta em vez de cortá-la pelo último clique</h3>
+      <p>Ela recebe [[meta_share]] do investimento e leva [[meta_payback_text]] para se pagar, mas a pausa de agosto/2025 sugere que
+        alimenta a busca pela marca e o orgânico. Repetir a pausa com grupo de controle por região.</p>
+      <p class="reco-meta"><span>Como medir</span> clientes novos da loja inteira nas regiões pausadas contra as não pausadas.</p>
+    </li>
+    <li>
+      <h3>Conter o CAC da mídia paga, que subiu [[cac_growth]] e não voltou</h3>
+      <p>Mais investimento está trazendo cada vez menos clientes por real. Desligar o que não traz cliente (o Demand Gen gastou
+        [[video_spend]] por [[video_customers]] clientes) e travar o CAC de cada canal no teto da seção 05.</p>
+      <p class="reco-meta"><span>Como medir</span> CAC mensal por canal contra o teto.</p>
+    </li>
+    <li>
+      <h3>Puxar a recompra e rever o frete grátis</h3>
+      <p>[[repeat_90]] voltam em 90 dias e [[repeat_12]] em um ano: é isso que paga a aquisição. O e-mail já fecha
+        [[email_orders]] pedidos. O frete grátis custou [[freight_subsidy]] no período.</p>
+      <p class="reco-meta"><span>Como medir</span> recompra em 90 dias por coorte, e frete pago ÷ frete cobrado.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ========================================================== Método -->
+<section id="metodo" aria-label="Método">
+  <details class="method">
+    <summary>Como os números foram calculados</summary>
+    <div class="method-body">
+      <h3>Fonte</h3>
+      <p>Banco de dados do repositório <code>ecommerce</code> (Tecelã Tecidos, dados simulados, gerados com semente fixa), lido sem
+        alterações e conferido por contagem de linhas e somas de controle. Período: [[period_long]]; outubro de 2026 tem só 13 dias
+        e fica fora.</p>
+      <h3>Definições</h3>
+      <ul>
+        <li><strong>Margem de contribuição</strong> por pedido = venda − custo do produto − frete pago à transportadora − reembolsos +
+          custo dos itens que voltaram ao estoque − taxa de pagamento − embalagem e atendimento. É antes de impostos sobre a venda,
+          que o banco não registra. Em inglês, é o que se chama de <em>unit economics</em>.</li>
+        <li><strong>Cliente novo</strong>: primeiro pedido pago da pessoa (contas com o mesmo CPF são unidas). Clientes importados
+          da plataforma anterior não contam como novos.</li>
+        <li><strong>Canal de aquisição</strong>: canal do primeiro pedido pago, pelo último clique da tabela de atribuição. A busca no
+          Google é separada em marca e genérica. Pedidos sem sessão ([[untracked_share]] dos clientes novos) ficam como "sem rastreio",
+          por isso o CAC por canal pago tende a sair acima do real; o CAC da loja inteira ([[blended_cac]]) não depende disso.</li>
+        <li><strong>CAC</strong> = investimento do canal ÷ clientes novos do canal. Canal sem investimento registrado tem CAC
+          indefinido, nunca zero. Todas as taxas são razão de somas (total ÷ total), não média de taxas mensais.</li>
+        <li><strong>LTV</strong> = margem dos primeiros 12 meses, só para coortes observadas pelos 12 meses inteiros. O LTV/CAC usa o
+          investimento dessas mesmas coortes.</li>
+        <li><strong>Payback</strong> = meses de margem acumulada até cobrir o CAC, contando o mês da compra.</li>
+        <li><strong>Amostra pequena</strong>: canal-mês com menos de [[small_sample]] clientes novos, ou canal com menos de 100 no período.
+          Variações dessas linhas não recebem cor de bom ou ruim.</li>
+      </ul>
+      <h3>Limites</h3>
+      <p>O CAC aqui é custo médio por cliente atribuído, não custo incremental. Custos de influenciadores, CRM, agência e conteúdo
+        não estão no banco. Os primeiros meses da base têm mais clientes "novos" que um mês típico, o que deixa o CAC do 1º ano mais baixo.</p>
+      <h3>Como reproduzir</h3>
+      <p>Código, SQL e testes em <a href="https://github.com/arielabade/unit-economics-olist">github.com/arielabade/unit-economics-olist</a>.
+        Esta página é gerada por <code>python -m unit_economics.dashboard</code> a partir das tabelas de <code>reports/</code>, as mesmas do README.</p>
+    </div>
+  </details>
+</section>
+</main>
+<script>
+  // Inline and not deferred: the table twins fold before the sections paint, so
+  // nothing jumps when the charts arrive. Without JavaScript they stay open, and
+  // app.js reopens them if the chart library cannot load.
+  document.querySelectorAll("details.data-twin").forEach(function (d) { d.open = false; });
+</script>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <span class="brand">[[symbol]]<span class="brand-name">ABADE</span></span>
+    <p>Relatório ABADE · dados simulados · <a href="#metodo">método</a> e
+      <a href="https://github.com/arielabade/unit-economics-olist">código</a></p>
+    <a href="#topo" class="to-top">Voltar ao topo ↑</a>
+  </div>
+</footer>
+
+<script type="application/json" id="dashboard-data">[[data]]</script>
+<noscript><style>.chart{display:none}</style></noscript>
+</body>
+</html>

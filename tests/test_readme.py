@@ -31,7 +31,22 @@ def test_readme_and_dashboard_quote_the_same_headline():
 
 def test_dashboard_ships_its_own_plotly_and_says_the_data_are_simulated():
     page = dashboard.render_page()
-    script = page.split('<script src="')[1].split('"')[0]
-    assert (ROOT / "docs" / "dashboard" / script).exists()
+    plotly = page.split('data-plotly="')[1].split('"')[0]
+    assert (ROOT / "docs" / "dashboard" / plotly).exists()
+    for asset in ("app.js", "styles.css", "favicon.svg"):
+        assert (ROOT / "docs" / "dashboard" / asset).exists()
     assert "Dados simulados" in page
     assert "https://cdn" not in page
+
+
+def test_dashboard_assets_match_their_templates():
+    for name in ("app.js", "styles.css"):
+        built = (ROOT / "docs" / "dashboard" / name).read_bytes()
+        assert built == (ROOT / "templates" / "dashboard" / name).read_bytes(), name
+
+
+def test_dashboard_page_works_without_javascript():
+    page = dashboard.render_page()
+    # Every table twin is open in the HTML; only an inline script folds them.
+    assert page.count('class="data-twin" open') == page.count('class="data-twin"')
+    assert "<noscript>" in page
