@@ -1,0 +1,7 @@
+premise,label,low_setting,high_setting,low,base,high,swing
+ltv_horizon_months,Meses de recompra contados no LTV,6 meses,24 meses,1.04,1.47,2.11,1.07
+attribution_model,Modelo de atribuição do 1º pedido,data_driven,last_click,1.21,1.47,1.47,0.26
+payment_fee_card,Taxa do cartão,1.75%,5.25%,1.44,1.47,1.5,0.06
+variable_order_cost,Custo de embalagem e atendimento por pedido,R$ 1.50,R$ 4.50,1.45,1.47,1.49,0.04
+payment_fee_pix,Taxa do Pix,0.50%,1.50%,1.46,1.47,1.47,0.01
+payment_fee_boleto,Taxa do boleto,R$ 1.75,R$ 5.25,1.47,1.47,1.47,0.0

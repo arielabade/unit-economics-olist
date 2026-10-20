@@ -66,7 +66,7 @@ SEQUENTIAL = LinearSegmentedColormap.from_list(
 )
 
 _CORNER_RADIUS = 24  # matches rx="24" on the brand panels
-_FONT_STACK = ("Roboto", "Lato", "Helvetica Neue", "Arial", "DejaVu Sans")
+_FONT_STACK = ("Lato", "Roboto", "Helvetica Neue", "Arial", "DejaVu Sans")
 
 
 def apply_theme() -> None:
@@ -81,6 +81,8 @@ def apply_theme() -> None:
             "font.family": "sans-serif",
             "font.sans-serif": stack,
             "svg.fonttype": "path",
+            # "R$ 278 against R$ 79" is money, not a formula between two $.
+            "text.parse_math": False,
             "figure.facecolor": "none",
             "savefig.facecolor": "none",
             "savefig.transparent": True,

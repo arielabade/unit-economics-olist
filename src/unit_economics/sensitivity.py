@@ -103,6 +103,23 @@ def attribution_table(models: pd.DataFrame) -> pd.DataFrame:
     return frame.sort_values(["channel", "model"]).reset_index(drop=True)
 
 
+def same_cohorts(outputs: dict[str, pd.DataFrame], short: int = 12, long: int = 24) -> tuple[float, float, int]:
+    """Paid LTV/CAC after ``short`` and ``long`` months on the *same* cohorts.
+
+    The cohorts observed for ``long`` months, read at both horizons: what the
+    longer horizon adds once cohort mix is held still.
+    """
+    curve = outputs["channel_cohort_curve"]
+    spend = outputs["channel_monthly"][["channel", "month", "spend"]].rename(columns={"month": "cohort_month"})
+    paid = curve[curve["channel"].isin(CHANNELS.paid)].merge(spend, on=["channel", "cohort_month"], how="left")
+    observed = paid.groupby("cohort_month")["months_since"].max() + 1
+    cohorts = observed[observed >= long].index
+    part = paid[paid["cohort_month"].isin(cohorts)]
+    total_spend = part[part["months_since"] == 0]["spend"].sum()
+    at = lambda k: part[part["months_since"] == k - 1]["cumulative_margin"].sum() / total_spend
+    return round(at(short), 3), round(at(long), 3), len(cohorts)
+
+
 def horizon_curve(outputs: dict[str, pd.DataFrame], max_months: int = 24) -> pd.DataFrame:
     """LTV/CAC after k months, for k = 1..max_months.
 

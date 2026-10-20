@@ -1,258 +1,269 @@
-"""Figures for the README, and the small result tables they read.
+"""Figures for the README, drawn from the committed tables in ``reports/``.
 
-The processed parquet files are git-ignored, because regenerating them means
-downloading ~45MB from the dataset mirror. The *summaries* are not: running
-``python -m unit_economics.figures`` writes them into ``reports/`` and then
-draws from there, so a reader can rebuild every chart from the repository
-alone, and the numbers quoted in the README have a committed source.
+Every figure reads ``reports/*.csv`` (written by ``reports.py``) and nothing
+else, so a reader can rebuild every chart from the repository alone, and the
+numbers in a chart are the numbers in the README and on the dashboard.
 
-Run with ``python -m unit_economics.figures`` after ``unit_economics.pipeline``.
+Titles state the finding, not the metric. Run with
+``python -m unit_economics.figures``; ``--refresh`` rewrites ``reports/``
+from ``data/processed`` first.
 """
 
 from __future__ import annotations
 
+import argparse
+import importlib.util
+import os
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from . import brandviz as bv
-from .config import MARGIN
-from .metrics import break_even_cac, contribution_margin
-from .summary import channel_summary, repeat_purchase_rate
+from . import reports
+from .config import CHANNELS, ROOT
 
-ROOT = Path(__file__).resolve().parents[2]
-PROCESSED = ROOT / "data" / "processed"
-REPORTS = ROOT / "reports"
 FIGURES = ROOT / "assets" / "figures"
+BRAND = ROOT / "assets" / "brand"
 
-#: Take rates to test the conclusion against. The modelled value sits in the
-#: middle; the question is at which end the paid channels stop paying.
-TAKE_RATES = (0.20, 0.175, 0.15, 0.125, 0.10, 0.08)
+#: Paid channels drawn as lines in the horizon chart, with their colours.
+HORIZON_SERIES = (
+    ("paid_total", "All paid channels", bv.COBALT),
+    ("paid_social", "Meta Ads", bv.CRIMSON),
+    ("paid_search_generic", "Google Search (generic)", bv.AMBER),
+    ("performance_max", "Google Performance Max", bv.TEAL),
+)
 
+ENGLISH = {
+    "paid_social": "Meta Ads",
+    "paid_search_generic": "Google Search, generic",
+    "paid_search_brand": "Google Search, brand",
+    "performance_max": "Google Performance Max",
+    "paid_shopping": "Google Shopping",
+    "paid_video": "Google Demand Gen",
+    "paid_total": "All paid channels",
+}
 
-def refresh_reports() -> None:
-    """Recompute the committed summary tables from the processed parquet files."""
-    channel_monthly = pd.read_parquet(PROCESSED / "channel_monthly.parquet")
-    customers = pd.read_parquet(PROCESSED / "customer_economics.parquet")
-    retention = pd.read_parquet(PROCESSED / "retention.parquet")
-
-    REPORTS.mkdir(exist_ok=True)
-    summary = channel_summary(channel_monthly)
-    summary.to_csv(REPORTS / "channel_summary.csv", index=False)
-    retention.to_csv(REPORTS / "retention.csv", index=False)
-
-    # Sensitivity is recomputed rather than stored from the pipeline: it is a
-    # question about an assumption, so it belongs next to the assumption.
-    gmv_per_customer = customers["gmv"].sum() / len(customers)
-    orders_per_customer = customers["orders"].sum() / len(customers)
-    rows = []
-    for take_rate in TAKE_RATES:
-        # Computed through the tested metric function rather than re-written
-        # here, so a change to the margin definition cannot leave this chart
-        # quietly describing the old one.
-        margin = contribution_margin(
-            gmv=gmv_per_customer,
-            take_rate=take_rate,
-            psp_fee_rate=MARGIN.psp_fee_rate,
-            variable_support_cost=MARGIN.variable_support_cost,
-            orders=orders_per_customer,
-        )
-        rows.append({
-            "take_rate": take_rate,
-            "margin_per_customer": round(margin, 2),
-            "break_even_cac": round(break_even_cac(margin), 2),
-            "cac_ceiling_at_3x": round(break_even_cac(margin, 3.0), 2),
-            "modelled": take_rate == MARGIN.take_rate,
-        })
-    pd.DataFrame(rows).to_csv(REPORTS / "take_rate_sensitivity.csv", index=False)
-
-    pd.DataFrame([{
-        "customers": len(customers),
-        "repeat_purchase_rate": round(repeat_purchase_rate(customers), 4),
-        "gmv_per_customer": round(gmv_per_customer, 2),
-    }]).to_csv(REPORTS / "headline.csv", index=False)
+PREMISES = {
+    "ltv_horizon_months": "Months of repeat purchase counted",
+    "attribution_model": "Attribution model of the first order",
+    "payment_fee_card": "Card fee",
+    "variable_order_cost": "Handling cost per order",
+    "payment_fee_pix": "Pix fee",
+    "payment_fee_boleto": "Boleto fee",
+}
 
 
-def repeat_purchase(retention: pd.DataFrame, headline_row: pd.Series) -> Path:
-    """The fact the whole case rests on: almost nobody comes back.
-
-    One bar carries 97% of the base, so a bar chart of counts would be one
-    tall bar and nine invisible ones. The chart is therefore of the *tail*,
-    with the single-purchase share stated rather than drawn.
-    """
-    tail = retention[retention["orders_per_customer"] <= 6].copy()
-    once = tail[tail["orders_per_customer"] == 1]["pct_of_customers"].iloc[0]
-
-    fig, ax = bv.panel(
-        12.4, 5.2,
-        title=f"{once:.1f}% of customers buy exactly once",
-        subtitle="Share of customers by number of delivered orders. There is no second order to recover acquisition cost from.",
-    )
-    positions = np.arange(len(tail), dtype=float)
-    ax.set_xlim(-0.6, len(tail) - 0.4)
-    ax.set_ylim(0, 110)
-    fig.canvas.draw()
-    colors = [bv.CRIMSON if row.orders_per_customer == 1 else bv.COBALT
-              for row in tail.itertuples()]
-    bv.bars(ax, positions, tail["pct_of_customers"], colors,
-            labels=[f"{value:.2f}%" for value in tail["pct_of_customers"]],
-            label_pad=0.022)
-    ax.set_xticks(positions, [str(int(value)) for value in tail["orders_per_customer"]])
-    ax.set_xlabel("Delivered orders per customer")
-    ax.set_ylabel("Share of customers")
-    ax.yaxis.set_major_formatter(lambda value, _: f"{value:.0f}%")
-    bv.annotate(
-        ax,
-        f"Everything to the right of the first bar\nadds up to {100 - once:.1f}% of customers",
-        xy=(1.6, 8), xytext=(2.3, 52), color=bv.IVORY,
-    )
-    bv.clean(ax)
-    return bv.save(fig, FIGURES / "repeat_purchase.svg")
-
-
-def channel_economics(summary: pd.DataFrame) -> Path:
-    """LTV/CAC by paid channel, against the planning target.
-
-    Unpaid channels are absent rather than shown at zero: they have no media
-    cost, so the ratio is undefined, and plotting them at zero would rank
-    organic as the worst channel in the business.
-    """
-    paid = summary[summary["paid"]].sort_values("ltv_cac_ratio", ascending=False).reset_index(drop=True)
-
-    fig, ax = bv.panel(
-        12.4, 5.4,
-        title="Only one paid channel pays for itself at the planning target",
-        subtitle="Contribution margin per customer divided by the cost to acquire them. Channel membership and spend are SIMULATED.",
-    )
-    positions = np.arange(len(paid), dtype=float)
-    ax.set_xlim(-0.6, len(paid) - 0.4)
-    ax.set_ylim(0, paid["ltv_cac_ratio"].max() * 1.30)
-    fig.canvas.draw()
-    colors = [bv.COBALT if row.ltv_cac_ratio >= 3.0 else bv.SLATE for row in paid.itertuples()]
-    bv.bars(ax, positions, paid["ltv_cac_ratio"], colors,
-            labels=[f"{value:.2f}x" for value in paid["ltv_cac_ratio"]])
-    ax.set_xticks(positions, paid["channel"])
-    ax.set_ylabel("LTV / CAC")
-    ax.yaxis.set_major_formatter(lambda value, _: f"{value:.0f}x")
-    bv.reference_line(ax, 3.0, "3x planning target", where=0.985)
-    bv.reference_line(ax, 1.0, "break-even", where=0.985)
-
-    worst = paid.iloc[-1]
-    bv.annotate(
-        ax,
-        f"{worst['channel']}: CAC of R$ {worst['cac']:.2f} against R$ "
-        f"{worst['margin_per_customer']:.2f} of first-order margin\n"
-        f"— {worst['acquisition_share_of_first_margin']:.0%} of the margin spent to acquire the customer",
-        xy=(len(paid) - 1 - 0.3, worst["ltv_cac_ratio"] * 1.08),
-        xytext=(0.45, paid["ltv_cac_ratio"].max() * 1.12), color=bv.IVORY,
-    )
-    bv.clean(ax)
-    return bv.save(fig, FIGURES / "channel_economics.svg")
-
-
-def take_rate_sensitivity(sensitivity: pd.DataFrame, summary: pd.DataFrame) -> Path:
-    """Where the conclusion breaks, as a function of its most sensitive input.
-
-    The take rate is assumed, not published. This chart is the honest answer
-    to "how much does that assumption matter": each paid channel's CAC is a
-    horizontal line, and the point where it crosses the break-even curve is
-    the take rate below which that channel stops paying.
-    """
-    sensitivity = sensitivity.sort_values("take_rate").reset_index(drop=True)
-    paid = summary[summary["paid"]].sort_values("cac")
-
-    fig, ax = bv.panel(
-        12.4, 5.6,
-        title="How much the conclusion depends on the one number that is assumed",
-        subtitle="Break-even CAC as a function of take rate, against what each paid channel actually costs",
-    )
-    rates = sensitivity["take_rate"] * 100
-    ax.plot(rates, sensitivity["break_even_cac"], color=bv.COBALT, linewidth=2.4,
-            marker="o", markersize=8, markeredgecolor=bv.CARBON, markeredgewidth=1.8,
-            zorder=5, label="Break-even CAC")
-    ax.plot(rates, sensitivity["cac_ceiling_at_3x"], color=bv.SLATE, linewidth=2.2,
-            linestyle=(0, (5, 4)), zorder=4, label="CAC ceiling at the 3x target")
-
-    # Two of the paid CACs are within R$ 0.40 of each other, so their labels
-    # are staggered: the lines stay where the data is, the text does not overlap.
-    span = paid["cac"].max() - paid["cac"].min()
-    minimum_gap = max(span * 0.09, 0.9)
-    last_label = None
-    for row in paid.itertuples():
-        ax.axhline(row.cac, color=bv.AMBER, linewidth=1.4, alpha=0.75, zorder=3)
-        label_y = row.cac
-        if last_label is not None and label_y - last_label < minimum_gap:
-            label_y = last_label + minimum_gap
-        last_label = label_y
-        ax.plot([rates.max() + 0.08, rates.max() + 0.34], [row.cac, label_y],
-                color=bv.GRID, linewidth=1.0, clip_on=False, zorder=3)
-        ax.text(rates.max() + 0.40, label_y, f"{row.channel} CAC R$ {row.cac:.2f}",
-                va="center", ha="left", fontsize=9.5, color=bv.IVORY)
-
-    # Where the break-even curve crosses the most expensive paid channel is
-    # the take rate at which paid acquisition stops paying for itself.
-    dearest = paid["cac"].max()
-    crossing = np.interp(dearest, sensitivity["break_even_cac"], rates)
-    ax.plot([crossing], [dearest], "o", markersize=10, markerfacecolor=bv.CRIMSON,
-            markeredgecolor=bv.CARBON, markeredgewidth=2.0, zorder=7)
-    bv.annotate(
-        ax,
-        f"Below a {crossing:.1f}% take rate, paid search and\npaid social stop paying for themselves",
-        xy=(crossing - 0.12, dearest), xytext=(rates.min() + 0.3, dearest * 1.42),
-        color=bv.CRIMSON,
-    )
-
-    modelled = sensitivity[sensitivity["modelled"]]
-    if not modelled.empty:
-        point = modelled.iloc[0]
-        ax.axvline(point["take_rate"] * 100, color=bv.STEEL, linewidth=1.2,
-                   linestyle=(0, (3, 3)), zorder=2)
-        ax.text(point["take_rate"] * 100, ax.get_ylim()[1], " modelled at 15% ",
-                va="top", ha="left", fontsize=9.5, color=bv.STEEL)
-
-    ax.set_xlabel("Marketplace take rate")
-    ax.set_ylabel("Maximum CAC the business can pay")
-    ax.xaxis.set_major_formatter(lambda value, _: f"{value:.1f}%")
-    ax.yaxis.set_major_formatter(lambda value, _: f"R$ {value:.0f}")
-    ax.set_xlim(rates.min() - 0.4, rates.max() + 0.4)
-    ax.legend(loc="upper left")
-    fig.subplots_adjust(right=0.74)
-    bv.clean(ax, axis="both", spines=("top", "right"))
-    return bv.save(fig, FIGURES / "take_rate_sensitivity.svg")
-
-
-def headline(summary: pd.DataFrame, headline_row: pd.Series, sensitivity: pd.DataFrame):
+def headline(h: dict) -> Path:
     """The three numbers the README leads with."""
-    modelled = sensitivity[sensitivity["modelled"]].iloc[0]
-    worst = summary[summary["paid"]].sort_values("ltv_cac_ratio").iloc[0]
     fig, _ = bv.kpi_strip([
-        (f"{headline_row['repeat_purchase_rate']:.1%}",
-         f"Of {headline_row['customers']:,.0f} customers ever place\na second order"),
-        (f"R$ {modelled['break_even_cac']:.2f}",
-         "First-order margin, and therefore the\nhard ceiling on what a customer can cost"),
-        (f"{worst['acquisition_share_of_first_margin']:.0%}",
-         f"Of that margin consumed by {worst['channel']}\nto acquire the customer"),
+        (f"{h['paid_ltv_cac']:.2f}x",
+         f"Margin returned per R$ 1 of paid media\nwithin {h['ltv_horizon_months']:.0f} months, all paid channels"),
+        (f"{h['meta_spend_share']:.0%}",
+         f"Of the paid budget goes to Meta, which\nonly breaks even in {h['ltv_horizon_months']:.0f} months "
+         f"({h['meta_ltv_cac']:.2f}x)"),
+        (f"+{h['paid_cac_year3'] / h['paid_cac_year1'] - 1:.0%}",
+         f"Paid CAC from year 1 to year 3 (R$ {h['paid_cac_year1']:.0f} to\n"
+         f"R$ {h['paid_cac_year3']:.0f}): budget +{h['spend_growth_y1_y3']:.0%}, "
+         f"paid customers +{h['paid_customers_growth_y1_y3']:.0%}"),
     ])
     return bv.save(fig, FIGURES / "headline.svg")
 
 
-def build_all(refresh: bool = True) -> list[Path]:
-    if refresh and PROCESSED.exists():
-        refresh_reports()
+def channel_ltv_cac(summary: pd.DataFrame, h: dict) -> Path:
+    """LTV/CAC by paid channel against break-even and the 3x planning target.
 
-    summary = pd.read_csv(REPORTS / "channel_summary.csv")
-    retention = pd.read_csv(REPORTS / "retention.csv")
-    sensitivity = pd.read_csv(REPORTS / "take_rate_sensitivity.csv")
-    headline_row = pd.read_csv(REPORTS / "headline.csv").iloc[0]
+    Unpaid channels are absent rather than shown at zero: they have no media
+    cost, so the ratio is undefined. A channel with too few customers to
+    read is named in the subtitle instead of drawn as a bar.
+    """
+    paid = summary[summary["paid"] & ~summary["channel"].isin(["paid_total"])]
+    small = paid[paid["small_sample"]]
+    paid = paid[~paid["small_sample"]].sort_values("ltv_cac_ratio").reset_index(drop=True)
+    meta = paid.set_index("channel").loc["paid_social"]
+
+    note = ""
+    if not small.empty:
+        row = small.iloc[0]
+        note = (f" {ENGLISH[row['channel']]} is left out: R$ {row['spend']:,.0f} bought "
+                f"{row['new_customers']:.0f} customers.")
+    fig, ax = bv.panel(
+        12.4, 5.6,
+        title="Only brand search clears 3x; Meta, the largest budget, only breaks even",
+        subtitle=(f"{h['ltv_horizon_months']:.0f}-month contribution margin per customer over CAC, "
+                  f"first order credited by last click.{note}"),
+    )
+    positions = np.arange(len(paid), dtype=float)
+    top = paid["ltv_cac_ratio"].max()
+    ax.set_xlim(0, top * 1.22)
+    ax.set_ylim(-0.6, len(paid) - 0.4)
+    fig.canvas.draw()
+    colors = [bv.CRIMSON if c == "paid_social" else bv.COBALT if r >= 3 else bv.SLATE
+              for c, r in zip(paid["channel"], paid["ltv_cac_ratio"])]
+    bv.bars(ax, positions, paid["ltv_cac_ratio"], colors, horizontal=True, width=0.58,
+            labels=[f"{v:.2f}x" for v in paid["ltv_cac_ratio"]])
+    ax.set_yticks(positions, [ENGLISH[c] for c in paid["channel"]])
+    ax.xaxis.set_major_formatter(lambda value, _: f"{value:.0f}x")
+    for value, text in ((1.0, "break-even"), (3.0, "3x target")):
+        ax.axvline(value, color=bv.STEEL, linewidth=1.1, linestyle=(0, (4, 3)), alpha=0.75, zorder=2)
+        ax.text(value, len(paid) - 0.45, f" {text}", color=bv.STEEL, fontsize=9, va="bottom")
+    bv.annotate(
+        ax,
+        f"Meta: CAC R$ {meta['cac']:.0f} against R$ {meta['first_order_margin_per_customer']:.0f} of "
+        f"first-order margin.\n{meta['spend'] / summary.set_index('channel').loc['paid_total', 'spend']:.0%} "
+        f"of paid spend, {meta['payback_months']:.0f} months to pay back.",
+        xy=(meta["ltv_cac_ratio"] + top * 0.04, float(paid.index[paid["channel"] == "paid_social"][0])),
+        xytext=(top * 0.42, float(paid.index[paid["channel"] == "paid_social"][0]) + 1.1),
+    )
+    bv.clean(ax, axis="x", spines=("top", "right", "bottom"))
+    return bv.save(fig, FIGURES / "channel_ltv_cac.svg")
+
+
+def paid_cac_trend(monthly: pd.DataFrame, yearly: pd.DataFrame) -> Path:
+    """Paid CAC per month, with each year's pooled level."""
+    paid = monthly[monthly["channel"] == "paid_total"].copy()
+    paid["date"] = pd.to_datetime(paid["month"])
+    years = yearly[yearly["channel"] == "paid_total"]
+
+    fig, ax = bv.panel(
+        12.4, 5.4,
+        title="Paid CAC rose by a third after the first year and has not come back",
+        subtitle="Paid media spend over customers acquired by paid channels, per month. "
+                 "Dashed: each year's level (total spend over total customers).",
+    )
+    ax.plot(paid["date"], paid["cac"], color=bv.COBALT, linewidth=2.2, marker="o", markersize=4.5,
+            markeredgecolor=bv.CARBON, markeredgewidth=1.0, zorder=5)
+    for row in years.itertuples():
+        start = pd.Timestamp(row.start + "-01")
+        end = pd.Timestamp(row.end + "-01") + pd.offsets.MonthEnd(0)
+        ax.plot([start, end], [row.cac, row.cac], color=bv.IVORY, linewidth=1.4,
+                linestyle=(0, (5, 3)), zorder=4)
+        ax.text(start + (end - start) / 2, paid["cac"].max() * 1.13, f"{row.year.replace('ano', 'year')}: R$ {row.cac:.0f}",
+                ha="center", va="center", fontsize=10, color=bv.IVORY, fontweight="bold",
+                bbox=dict(facecolor=bv.CARBON, edgecolor="none", pad=2.0), zorder=6)
+    ax.set_ylim(0, paid["cac"].max() * 1.22)
+    ax.yaxis.set_major_formatter(lambda value, _: f"R$ {value:.0f}")
+    ax.set_ylabel("Paid CAC")
+    import matplotlib.dates as mdates
+    ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 4, 7, 10)))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+    bv.clean(ax)
+    return bv.save(fig, FIGURES / "paid_cac_trend.svg")
+
+
+def ltv_cac_horizon(curve: pd.DataFrame, h: dict) -> Path:
+    """The premise that moves the result most: how many months are counted."""
+    fig, ax = bv.panel(
+        12.4, 5.6,
+        title=f"Paid media pays back in {h['paid_payback_months']:.0f} months and does not reach 3x within two years",
+        subtitle="Cumulative contribution margin over CAC, by months since acquisition. "
+                 "Each point uses only cohorts observed that long, over their own spend.",
+    )
+    ends = []
+    for channel, name, color in HORIZON_SERIES:
+        part = curve[curve["channel"] == channel].sort_values("months")
+        width = 2.8 if channel == "paid_total" else 1.8
+        ax.plot(part["months"], part["ltv_cac"], color=color, linewidth=width, zorder=5 if channel == "paid_total" else 4)
+        ends.append((part.iloc[-1], name, color, channel))
+    # End labels are spread apart when two lines finish at the same height.
+    placed = []
+    for last, name, color, channel in sorted(ends, key=lambda e: -e[0]["ltv_cac"]):
+        y = last["ltv_cac"]
+        if placed and placed[-1] - y < 0.13:
+            y = placed[-1] - 0.13
+        placed.append(y)
+        ax.text(last["months"] + 0.4, y, f"{name} {last['ltv_cac']:.2f}x",
+                color=color, fontsize=9.5, va="center", fontweight="bold" if channel == "paid_total" else "normal")
+    for value, text in ((1.0, "break-even"), (3.0, "3x target")):
+        ax.axhline(value, color=bv.STEEL, linewidth=1.1, linestyle=(0, (4, 3)), alpha=0.75, zorder=2)
+        ax.text(0.7, value + 0.05, text, color=bv.STEEL, fontsize=9, va="bottom")
+    horizon = h["ltv_horizon_months"]
+    ax.axvline(horizon, color=bv.GRID, linewidth=1.2, zorder=1)
+    ax.text(horizon + 0.2, 3.25, f"LTV used: {horizon:.0f} months", color=bv.STEEL, fontsize=9)
+    ax.set_xlim(0.5, curve["months"].max() + 6.5)
+    ax.set_ylim(0, 3.5)
+    ax.set_xlabel("Months since acquisition (the acquisition month is month 1)")
+    ax.set_ylabel("LTV / CAC")
+    ax.yaxis.set_major_formatter(lambda value, _: f"{value:.1f}x")
+    bv.clean(ax)
+    return bv.save(fig, FIGURES / "ltv_cac_horizon.svg")
+
+
+def sensitivity(frame: pd.DataFrame, h: dict) -> Path:
+    """Tornado: the range of the paid LTV/CAC as each premise moves."""
+    frame = frame.sort_values("swing").reset_index(drop=True)
+    fig, ax = bv.panel(
+        12.4, 5.8,
+        title="The answer depends on how long you wait for repeat purchase, not on the assumed costs",
+        subtitle=f"All paid channels' LTV/CAC ({h['paid_ltv_cac']:.2f}x as modelled) with one premise moved at a time.",
+    )
+    base = frame["base"].iloc[0]
+    positions = np.arange(len(frame), dtype=float)
+    for y, row in zip(positions, frame.itertuples()):
+        color = bv.COBALT if y == positions[-1] else bv.SLATE
+        ax.barh(y, row.high - row.low, left=row.low, height=0.5, color=color, zorder=3)
+        ax.text(row.low - 0.03, y, f"{row.low:.2f}  {_setting(row.low_setting)}", ha="right", va="center",
+                fontsize=9, color=bv.STEEL)
+        ax.text(row.high + 0.03, y, f"{_setting(row.high_setting)}  {row.high:.2f}", ha="left", va="center",
+                fontsize=9, color=bv.STEEL)
+    ax.axvline(base, color=bv.IVORY, linewidth=1.2, zorder=4)
+    ax.set_yticks(positions, [PREMISES[p] for p in frame["premise"]])
+    ax.set_xlim(frame["low"].min() - 0.55, frame["high"].max() + 0.55)
+    ax.xaxis.set_major_formatter(lambda value, _: f"{value:.1f}x")
+    fig.subplots_adjust(left=0.27, right=0.97)
+    bv.clean(ax, axis="x", spines=("top", "right", "left"))
+    return bv.save(fig, FIGURES / "sensitivity.svg")
+
+
+def _setting(text: str) -> str:
+    return (str(text).replace("meses", "months").replace("_", " ").replace("R$ ", "R$ ")
+            .replace(",", "."))
+
+
+def brand_panels(h: dict) -> list[Path]:
+    """Header and case arc, through the portfolio's brand kit when it is present.
+
+    The kit lives in the profile repository (``arielabade/brand``), next to
+    this one. Without it the committed panels are kept. Neither panel quotes
+    a number, so they cannot drift from reports/.
+    """
+    kit = Path(os.environ.get("ABADE_BRANDKIT", ROOT.parent / "arielabade" / "brand" / "brandkit.py"))
+    if not kit.exists():
+        return []
+    spec = importlib.util.spec_from_file_location("brandkit", kit)
+    brandkit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(brandkit)
+    brandkit.emit(BRAND, "header", brandkit.header,
+                  "Scale · Unit economics · DuckDB SQL", "Unit Economics by Channel",
+                  "CAC, LTV, payback and contribution margin by acquisition channel for an online "
+                  "fabric store. Simulated data.")
+    brandkit.emit(BRAND, "arc", brandkit.arc, [
+        "An online fabric store spends on Meta and Google to acquire customers.",
+        "Which channels bring customers worth more than they cost, and how fast do they pay back?",
+        "Retail margin from the real order costs, channel from the attribution table, every premise tested.",
+        "Paid media pays back slowly and Meta only breaks even. Repeat purchase is what pays for acquisition.",
+    ])
+    return [BRAND / "header.svg", BRAND / "arc.svg"]
+
+
+def build_all(refresh: bool = False) -> list[Path]:
+    if refresh:
+        reports.refresh()
+    tables = reports.read()
+    h = reports.headline_values(tables)
     return [
-        headline(summary, headline_row, sensitivity),
-        repeat_purchase(retention, headline_row),
-        channel_economics(summary),
-        take_rate_sensitivity(sensitivity, summary),
+        headline(h),
+        channel_ltv_cac(tables["channel_summary"], h),
+        paid_cac_trend(tables["channel_monthly"], tables["yearly"]),
+        ltv_cac_horizon(tables["ltv_curve"], h),
+        sensitivity(tables["sensitivity"], h),
+        *brand_panels(h),
     ]
 
 
 if __name__ == "__main__":
-    for path in build_all():
+    parser = argparse.ArgumentParser(description="Draw the README figures from reports/.")
+    parser.add_argument("--refresh", action="store_true", help="rewrite reports/ from data/processed first")
+    args = parser.parse_args()
+    for path in build_all(refresh=args.refresh):
         print(path.relative_to(ROOT))

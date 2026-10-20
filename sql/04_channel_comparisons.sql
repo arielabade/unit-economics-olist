@@ -158,3 +158,29 @@ ORDER BY channel, month;
 
 CREATE OR REPLACE TABLE monthly_totals AS
 SELECT * FROM channel_comparisons WHERE channel = 'all' ORDER BY month;
+
+-- Where each real of revenue goes, per month, before media and after it.
+CREATE OR REPLACE TABLE monthly_pnl AS
+WITH costs AS (
+    SELECT
+        order_month                AS month,
+        COUNT(*)                   AS orders,
+        SUM(revenue)               AS revenue,
+        SUM(product_cost)          AS product_cost,
+        SUM(freight_cost)          AS freight_cost,
+        SUM(freight_charged)       AS freight_charged,
+        SUM(refunds)               AS refunds,
+        SUM(restocked_cost)        AS restocked_cost,
+        SUM(payment_fee)           AS payment_fee,
+        SUM(variable_order_cost)   AS variable_order_cost,
+        SUM(contribution_margin)   AS contribution_margin
+    FROM order_economics
+    WHERE order_month BETWEEN getvariable('analysis_start')::VARCHAR AND getvariable('analysis_end')::VARCHAR
+    GROUP BY order_month
+)
+SELECT c.*,
+       s.spend,
+       c.contribution_margin - s.spend AS margin_after_media
+FROM costs c
+LEFT JOIN (SELECT month, SUM(spend) AS spend FROM channel_spend_monthly GROUP BY month) s USING (month)
+ORDER BY month;

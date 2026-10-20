@@ -1,0 +1,29 @@
+model,channel,label,new_customers,cac,ltv_cac_ratio
+data_driven,paid_search_brand,Google Busca (marca),2847.9,47.98,6.74
+first_click,paid_search_brand,Google Busca (marca),1659.0,82.36,4.11
+last_click,paid_search_brand,Google Busca (marca),4140.0,33.0,9.66
+linear,paid_search_brand,Google Busca (marca),2600.0,52.55,6.19
+data_driven,paid_search_generic,Google Busca (genérica),2914.1,220.87,1.51
+first_click,paid_search_generic,Google Busca (genérica),3254.0,197.79,1.61
+last_click,paid_search_generic,Google Busca (genérica),3070.0,209.65,1.64
+linear,paid_search_generic,Google Busca (genérica),2975.0,216.34,1.53
+data_driven,paid_shopping,Google Shopping,735.8,196.3,1.85
+first_click,paid_shopping,Google Shopping,916.0,157.67,2.09
+last_click,paid_shopping,Google Shopping,969.0,149.05,2.36
+linear,paid_shopping,Google Shopping,882.9,163.59,2.13
+data_driven,paid_social,Meta Ads,8096.2,304.94,0.92
+first_click,paid_social,Meta Ads,9388.0,262.98,1.1
+last_click,paid_social,Meta Ads,8871.0,278.3,1.0
+linear,paid_social,Meta Ads,8367.0,295.07,0.96
+data_driven,paid_total,Canais pagos (total),16793.0,252.2,1.21
+first_click,paid_total,Canais pagos (total),18178.0,232.99,1.31
+last_click,paid_total,Canais pagos (total),20278.0,208.86,1.47
+linear,paid_total,Canais pagos (total),17661.3,239.8,1.28
+data_driven,paid_video,Google Demand Gen (vídeo),6.3,9911.5,0.1
+first_click,paid_video,Google Demand Gen (vídeo),5.0,12574.92,0.09
+last_click,paid_video,Google Demand Gen (vídeo),14.0,4491.04,0.11
+linear,paid_video,Google Demand Gen (vídeo),7.9,7942.06,0.1
+data_driven,performance_max,Google Performance Max,2192.7,355.21,0.88
+first_click,performance_max,Google Performance Max,2956.0,263.49,1.18
+last_click,performance_max,Google Performance Max,3214.0,242.34,1.33
+linear,performance_max,Google Performance Max,2828.5,275.36,1.13

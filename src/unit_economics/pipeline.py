@@ -54,6 +54,7 @@ OUTPUTS = (
     "channel_ltv_curve",
     "channel_retention",
     "monthly_totals",
+    "monthly_pnl",
     "month_events",
 )
 

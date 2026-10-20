@@ -1,0 +1,162 @@
+channel,months,ltv_cac,margin_per_customer,cac,cohorts,label
+paid_search_brand,1,2.979,98.31,33.0,36,Google Busca (marca)
+paid_search_brand,2,3.784,124.78,32.97,35,Google Busca (marca)
+paid_search_brand,3,4.525,148.23,32.76,34,Google Busca (marca)
+paid_search_brand,4,5.343,173.14,32.41,33,Google Busca (marca)
+paid_search_brand,5,5.965,193.17,32.38,32,Google Busca (marca)
+paid_search_brand,6,6.638,212.89,32.07,31,Google Busca (marca)
+paid_search_brand,7,7.267,230.72,31.75,30,Google Busca (marca)
+paid_search_brand,8,7.945,251.07,31.6,29,Google Busca (marca)
+paid_search_brand,9,8.351,265.56,31.8,28,Google Busca (marca)
+paid_search_brand,10,8.857,276.81,31.25,27,Google Busca (marca)
+paid_search_brand,11,9.287,289.14,31.13,26,Google Busca (marca)
+paid_search_brand,12,9.665,301.58,31.2,25,Google Busca (marca)
+paid_search_brand,13,10.101,312.12,30.9,24,Google Busca (marca)
+paid_search_brand,14,10.582,322.05,30.43,23,Google Busca (marca)
+paid_search_brand,15,11.1,331.11,29.83,22,Google Busca (marca)
+paid_search_brand,16,11.154,335.13,30.04,21,Google Busca (marca)
+paid_search_brand,17,11.528,340.7,29.55,20,Google Busca (marca)
+paid_search_brand,18,11.984,349.01,29.12,19,Google Busca (marca)
+paid_search_brand,19,12.194,350.17,28.72,18,Google Busca (marca)
+paid_search_brand,20,12.021,342.18,28.47,17,Google Busca (marca)
+paid_search_brand,21,12.323,349.07,28.33,16,Google Busca (marca)
+paid_search_brand,22,12.911,356.6,27.62,15,Google Busca (marca)
+paid_search_brand,23,13.272,358.99,27.05,14,Google Busca (marca)
+paid_search_brand,24,13.773,366.72,26.63,13,Google Busca (marca)
+paid_search_generic,1,0.512,107.26,209.65,36,Google Busca (genérica)
+paid_search_generic,2,0.643,134.4,209.13,35,Google Busca (genérica)
+paid_search_generic,3,0.8,165.95,207.51,34,Google Busca (genérica)
+paid_search_generic,4,0.927,191.67,206.87,33,Google Busca (genérica)
+paid_search_generic,5,1.057,217.24,205.54,32,Google Busca (genérica)
+paid_search_generic,6,1.178,239.28,203.1,31,Google Busca (genérica)
+paid_search_generic,7,1.311,263.41,201.0,30,Google Busca (genérica)
+paid_search_generic,8,1.409,282.02,200.1,29,Google Busca (genérica)
+paid_search_generic,9,1.45,291.68,201.12,28,Google Busca (genérica)
+paid_search_generic,10,1.515,302.65,199.77,27,Google Busca (genérica)
+paid_search_generic,11,1.578,315.08,199.62,26,Google Busca (genérica)
+paid_search_generic,12,1.638,328.91,200.78,25,Google Busca (genérica)
+paid_search_generic,13,1.716,342.09,199.36,24,Google Busca (genérica)
+paid_search_generic,14,1.767,351.1,198.65,23,Google Busca (genérica)
+paid_search_generic,15,1.813,356.49,196.64,22,Google Busca (genérica)
+paid_search_generic,16,1.83,359.41,196.37,21,Google Busca (genérica)
+paid_search_generic,17,1.907,372.43,195.34,20,Google Busca (genérica)
+paid_search_generic,18,1.992,384.74,193.18,19,Google Busca (genérica)
+paid_search_generic,19,1.98,377.08,190.4,18,Google Busca (genérica)
+paid_search_generic,20,2.038,386.45,189.61,17,Google Busca (genérica)
+paid_search_generic,21,2.07,394.2,190.42,16,Google Busca (genérica)
+paid_search_generic,22,2.082,393.03,188.78,15,Google Busca (genérica)
+paid_search_generic,23,2.138,395.13,184.82,14,Google Busca (genérica)
+paid_search_generic,24,2.096,386.83,184.53,13,Google Busca (genérica)
+paid_shopping,1,0.609,90.75,149.05,10,Google Shopping
+paid_shopping,2,0.858,127.87,149.05,10,Google Shopping
+paid_shopping,3,1.09,162.42,149.05,10,Google Shopping
+paid_shopping,4,1.278,190.43,149.05,10,Google Shopping
+paid_shopping,5,1.47,219.16,149.05,10,Google Shopping
+paid_shopping,6,1.631,243.14,149.05,10,Google Shopping
+paid_shopping,7,1.786,266.25,149.05,10,Google Shopping
+paid_shopping,8,1.927,287.17,149.05,10,Google Shopping
+paid_shopping,9,2.014,300.17,149.05,10,Google Shopping
+paid_shopping,10,2.127,317.02,149.05,10,Google Shopping
+paid_shopping,11,2.26,336.82,149.05,10,Google Shopping
+paid_shopping,12,2.362,352.12,149.05,10,Google Shopping
+paid_shopping,13,2.462,366.95,149.05,10,Google Shopping
+paid_shopping,14,2.551,380.25,149.05,10,Google Shopping
+paid_shopping,15,2.6,387.57,149.05,10,Google Shopping
+paid_shopping,16,2.653,395.43,149.05,10,Google Shopping
+paid_shopping,17,2.715,404.6,149.05,10,Google Shopping
+paid_shopping,18,2.743,408.79,149.05,10,Google Shopping
+paid_shopping,19,2.788,415.49,149.05,10,Google Shopping
+paid_shopping,20,2.846,424.25,149.05,10,Google Shopping
+paid_shopping,21,2.882,429.55,149.05,10,Google Shopping
+paid_shopping,22,2.941,438.34,149.05,10,Google Shopping
+paid_shopping,23,2.977,443.67,149.05,10,Google Shopping
+paid_shopping,24,3.024,450.79,149.05,10,Google Shopping
+paid_social,1,0.312,86.76,278.3,36,Meta Ads
+paid_social,2,0.402,111.7,277.75,35,Meta Ads
+paid_social,3,0.486,134.32,276.57,34,Meta Ads
+paid_social,4,0.562,154.07,274.36,33,Meta Ads
+paid_social,5,0.638,174.41,273.19,32,Meta Ads
+paid_social,6,0.713,192.62,270.07,31,Meta Ads
+paid_social,7,0.782,209.47,267.9,30,Meta Ads
+paid_social,8,0.83,222.35,267.93,29,Meta Ads
+paid_social,9,0.874,235.82,269.69,28,Meta Ads
+paid_social,10,0.925,246.76,266.79,27,Meta Ads
+paid_social,11,0.972,257.83,265.38,26,Meta Ads
+paid_social,12,1.005,266.22,264.97,25,Meta Ads
+paid_social,13,1.04,274.86,264.32,24,Meta Ads
+paid_social,14,1.081,283.35,262.01,23,Meta Ads
+paid_social,15,1.114,291.06,261.15,22,Meta Ads
+paid_social,16,1.136,298.82,262.96,21,Meta Ads
+paid_social,17,1.155,303.34,262.69,20,Meta Ads
+paid_social,18,1.189,310.08,260.75,19,Meta Ads
+paid_social,19,1.208,312.3,258.48,18,Meta Ads
+paid_social,20,1.246,317.17,254.52,17,Meta Ads
+paid_social,21,1.268,319.55,252.0,16,Meta Ads
+paid_social,22,1.302,322.19,247.51,15,Meta Ads
+paid_social,23,1.347,326.54,242.5,14,Meta Ads
+paid_social,24,1.416,333.77,235.67,13,Meta Ads
+paid_total,1,0.458,95.68,208.86,36,Canais pagos (total)
+paid_total,2,0.59,123.07,208.72,35,Canais pagos (total)
+paid_total,3,0.717,149.0,207.77,34,Canais pagos (total)
+paid_total,4,0.831,171.56,206.47,33,Canais pagos (total)
+paid_total,5,0.94,193.62,206.01,32,Canais pagos (total)
+paid_total,6,1.044,213.21,204.2,31,Canais pagos (total)
+paid_total,7,1.145,232.11,202.76,30,Canais pagos (total)
+paid_total,8,1.226,248.44,202.68,29,Canais pagos (total)
+paid_total,9,1.28,261.69,204.4,28,Canais pagos (total)
+paid_total,10,1.353,273.8,202.42,27,Canais pagos (total)
+paid_total,11,1.416,285.99,201.97,26,Canais pagos (total)
+paid_total,12,1.468,296.73,202.14,25,Canais pagos (total)
+paid_total,13,1.527,307.39,201.3,24,Canais pagos (total)
+paid_total,14,1.593,316.91,198.96,23,Canais pagos (total)
+paid_total,15,1.643,324.6,197.53,22,Canais pagos (total)
+paid_total,16,1.677,331.78,197.88,21,Canais pagos (total)
+paid_total,17,1.74,339.75,195.3,20,Canais pagos (total)
+paid_total,18,1.799,345.21,191.88,19,Canais pagos (total)
+paid_total,19,1.825,346.77,189.99,18,Canais pagos (total)
+paid_total,20,1.866,349.61,187.38,17,Canais pagos (total)
+paid_total,21,1.91,354.89,185.78,16,Canais pagos (total)
+paid_total,22,1.972,359.67,182.42,15,Canais pagos (total)
+paid_total,23,2.046,364.55,178.15,14,Canais pagos (total)
+paid_total,24,2.11,367.79,174.28,13,Canais pagos (total)
+paid_video,1,0.018,79.95,4491.04,6,Google Demand Gen (vídeo)
+paid_video,2,0.022,96.58,4491.04,6,Google Demand Gen (vídeo)
+paid_video,3,0.051,228.61,4491.04,6,Google Demand Gen (vídeo)
+paid_video,4,0.058,259.34,4491.04,6,Google Demand Gen (vídeo)
+paid_video,5,0.079,355.57,4491.04,6,Google Demand Gen (vídeo)
+paid_video,6,0.087,392.7,4491.04,6,Google Demand Gen (vídeo)
+paid_video,7,0.087,392.7,4491.04,6,Google Demand Gen (vídeo)
+paid_video,8,0.09,404.24,4491.04,6,Google Demand Gen (vídeo)
+paid_video,9,0.095,425.13,4491.04,6,Google Demand Gen (vídeo)
+paid_video,10,0.095,425.13,4491.04,6,Google Demand Gen (vídeo)
+paid_video,11,0.095,427.37,4491.04,6,Google Demand Gen (vídeo)
+paid_video,12,0.107,481.75,4491.04,6,Google Demand Gen (vídeo)
+paid_video,13,0.105,533.8,5069.55,5,Google Demand Gen (vídeo)
+paid_video,14,0.139,676.33,4881.71,4,Google Demand Gen (vídeo)
+paid_video,15,0.193,792.13,4096.11,3,Google Demand Gen (vídeo)
+paid_video,16,0.29,904.59,3122.86,2,Google Demand Gen (vídeo)
+paid_video,17,0.648,3806.53,5872.1,1,Google Demand Gen (vídeo)
+performance_max,1,0.443,107.4,242.34,28,Google Performance Max
+performance_max,2,0.58,140.31,242.09,27,Google Performance Max
+performance_max,3,0.708,170.12,240.41,26,Google Performance Max
+performance_max,4,0.808,192.95,238.69,25,Google Performance Max
+performance_max,5,0.906,216.45,238.94,24,Google Performance Max
+performance_max,6,0.99,235.7,238.19,23,Google Performance Max
+performance_max,7,1.076,255.27,237.21,22,Google Performance Max
+performance_max,8,1.147,272.17,237.27,21,Google Performance Max
+performance_max,9,1.183,286.88,242.61,20,Google Performance Max
+performance_max,10,1.257,303.25,241.3,19,Google Performance Max
+performance_max,11,1.3,314.99,242.32,18,Google Performance Max
+performance_max,12,1.329,323.67,243.48,17,Google Performance Max
+performance_max,13,1.383,335.33,242.53,16,Google Performance Max
+performance_max,14,1.433,345.6,241.18,15,Google Performance Max
+performance_max,15,1.469,355.62,242.02,14,Google Performance Max
+performance_max,16,1.506,369.46,245.29,13,Google Performance Max
+performance_max,17,1.598,384.62,240.74,12,Google Performance Max
+performance_max,18,1.59,375.59,236.19,11,Google Performance Max
+performance_max,19,1.605,382.71,238.41,10,Google Performance Max
+performance_max,20,1.596,377.58,236.53,9,Google Performance Max
+performance_max,21,1.631,385.68,236.5,8,Google Performance Max
+performance_max,22,1.699,398.09,234.27,7,Google Performance Max
+performance_max,23,1.784,410.22,229.98,6,Google Performance Max
+performance_max,24,1.539,379.76,246.68,5,Google Performance Max

@@ -1,7 +1,16 @@
-channel,paid,new_customers,gmv,contribution_margin,margin_per_customer,spend,cac,ltv_cac_ratio,acquisition_share_of_first_margin,break_even_cac,cac_ceiling_at_3x
-organic_search,False,24851,3504180.74,399578.28,16.08,,,,,16.08,5.36
-paid_search,True,20450,2921657.94,333515.69,16.31,238203.44,11.65,1.4,0.714,16.31,5.44
-paid_social,True,16515,2339209.66,266811.33,16.16,185942.56,11.26,1.43,0.697,16.16,5.39
-direct,False,14035,1998081.37,227983.83,16.24,,,,,16.24,5.41
-marketplace_referral,False,9166,1266886.91,144172.95,15.73,,,,,15.73,5.24
-email_crm,True,7360,1034955.71,117997.99,16.03,27551.85,3.74,4.28,0.233,16.03,5.34
+channel,label,paid,spend,new_customers,orders,revenue,contribution_margin,margin_after_media,first_order_margin_per_customer,cac,cac_share_of_first_margin,mature_customers,cac_mature_cohorts,ltv,ltv_cac_ratio,break_even_cac,cac_ceiling_at_3x,payback_months,small_sample
+paid_social,Meta Ads,True,2468830.2,8871.0,16169.0,4065157.68,1702081.41,-766748.79,79.11,278.3,3.518,5998.0,264.97,266.22,1.0,266.22,88.74,14.0,False
+organic_search,Busca orgânica,False,,7043.0,21313.0,6022921.26,2569348.7,2569348.7,85.69,,,4567.0,,299.96,,299.96,99.99,,False
+untracked,Sem rastreio,False,,6529.0,22967.0,7585403.03,3321687.57,3321687.57,98.93,,,4260.0,,340.47,,340.47,113.49,,False
+organic_social,Social orgânico,False,,4631.0,12956.0,3690338.8,1569569.09,1569569.09,82.32,,,3017.0,,283.33,,283.33,94.44,,False
+direct,Direto,False,,4416.0,17988.0,5311271.77,2283932.7,2283932.7,91.24,,,2887.0,,309.68,,309.68,103.23,,False
+paid_search_brand,Google Busca (marca),True,136633.57,4140.0,13477.0,3817098.4,1622325.2,1485691.63,87.95,33.0,0.375,2666.0,31.2,301.58,9.66,301.58,100.53,1.0,False
+performance_max,Google Performance Max,True,778868.14,3214.0,8043.0,2306512.68,982488.74,203620.6,94.82,242.34,2.556,1766.0,243.48,323.67,1.33,323.67,107.89,7.0,False
+paid_search_generic,Google Busca (genérica),True,643623.32,3070.0,6171.0,1729049.94,730540.64,86917.32,97.31,209.65,2.154,2057.0,200.78,328.91,1.64,328.91,109.64,5.0,False
+paid_shopping,Google Shopping,True,144429.46,969.0,1860.0,477694.26,201529.25,57099.79,79.52,149.05,1.874,969.0,149.05,352.12,2.36,352.12,117.37,3.0,False
+referral,Sites de referência,False,,942.0,2714.0,770043.72,326582.1,326582.1,82.28,,,576.0,,320.35,,320.35,106.78,,False
+whatsapp,WhatsApp,False,,578.0,2280.0,665262.76,285874.01,285874.01,87.37,,,388.0,,326.04,,326.04,108.68,,False
+email,E-mail,False,,115.0,5804.0,1797338.55,778836.34,778836.34,110.61,,,68.0,,436.58,,436.58,145.53,,False
+paid_video,Google Demand Gen (vídeo),True,62874.6,14.0,17.0,4406.8,1444.15,-61430.45,79.95,4491.04,56.172,14.0,4491.04,481.75,0.11,481.75,160.58,,True
+paid_total,Canais pagos (total),True,4235259.29,20278.0,45737.0,12399919.76,5240409.4,1005150.11,86.18,208.86,2.424,13470.0,202.14,296.73,1.47,296.73,98.91,6.0,False
+all,Loja inteira,False,4235259.29,44532.0,131759.0,38242499.65,16376239.92,12140980.63,88.07,95.11,1.08,29233.0,93.14,304.68,3.27,304.68,101.56,,False
