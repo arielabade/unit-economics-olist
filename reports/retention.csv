@@ -1,6 +1,6 @@
 channel,mature_customers,repeat_rate_90d,repeat_rate_in_horizon,orders_per_customer_in_horizon,first_order_margin_per_customer,ltv,spend,new_customers,cac,payback_months,months_observed,label
 all,29233.0,0.3966,0.5806,2.6488,85.6357,304.6833,4235259.29,44532.0,95.106,1,36,Loja inteira
-paid_total,13470.0,0.3909,0.5751,2.6198,83.7699,296.7265,4235259.29,20278.0,208.8598,6,36,Canais pagos (total)
+paid_total,13470.0,0.3909,0.5751,2.6198,83.7699,296.7265,4235259.29,20278.0,208.8598,6,36,Mídia paga (total)
 paid_social,5998.0,0.3826,0.5614,2.5569,77.9723,266.2189,2468830.2,8871.0,278.3035,14,36,Meta Ads
 organic_search,4567.0,0.3992,0.5892,2.6698,82.9211,299.9624,,7043.0,,,,Busca orgânica
 untracked,4260.0,0.4127,0.5941,2.7448,96.462,340.468,,6529.0,,,,Sem rastreio

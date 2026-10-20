@@ -62,9 +62,10 @@ orgânico recolhem. O próximo passo é um holdout por região e usar CAC increm
 
 ### 4. "Qual premissa mais muda a conclusão?"
 
-O horizonte de recompra contado no LTV: 6 meses dá 1,04x, 24 meses dá 2,11x. Como coortes antigas eram mais
-baratas, também meço com as coortes fixas (1,65x em 12 meses → 2,11x em 24). Modelo de atribuição vem em
-segundo (1,21x a 1,47x). Custos estimados quase não mexem.
+O horizonte de recompra contado no LTV. Medido nas mesmas 13 coortes (as observadas por 24 meses), vai de
+1,17x com 6 meses a 1,65x com 12 e 2,11x com 24. A primeira versão comparava 6 meses em 31 coortes com 24
+meses nas 13 mais antigas, que eram mais baratas: inflava o efeito. Modelo de atribuição vem em segundo
+(1,21x a 1,47x). Custos estimados quase não mexem.
 
 ### 5. "Como você sabe que os dados estão certos?"
 

@@ -8,7 +8,7 @@ pausa 2025,paid_search_brand,Google Busca (marca),2025-07,2025-08,149.0,84.0,396
 pausa 2025,paid_search_generic,Google Busca (genérica),2025-07,2025-08,86.0,70.0,17384.87,17587.17
 pausa 2025,paid_shopping,Google Shopping,2025-07,2025-08,0.0,0.0,,
 pausa 2025,paid_social,Meta Ads,2025-07,2025-08,274.0,100.0,62155.50000000002,30878.959999999992
-pausa 2025,paid_total,Canais pagos (total),2025-07,2025-08,637.0,369.0,121828.76000000002,90694.41
+pausa 2025,paid_total,Mídia paga (total),2025-07,2025-08,637.0,369.0,121828.76000000002,90694.41
 pausa 2025,paid_video,Google Demand Gen (vídeo),2025-07,2025-08,1.0,1.0,11882.060000000001,11952.13
 pausa 2025,performance_max,Google Performance Max,2025-07,2025-08,127.0,114.0,26438.290000000005,26283.26000000001
 pausa 2025,referral,Sites de referência,2025-07,2025-08,30.0,17.0,,
@@ -23,7 +23,7 @@ mesmo período 2024,paid_search_brand,Google Busca (marca),2024-07,2024-08,94.0,
 mesmo período 2024,paid_search_generic,Google Busca (genérica),2024-07,2024-08,89.0,57.0,19473.11,19612.10000000001
 mesmo período 2024,paid_shopping,Google Shopping,2024-07,2024-08,1.0,0.0,0.0,
 mesmo período 2024,paid_social,Meta Ads,2024-07,2024-08,231.0,205.0,64489.179999999986,65569.24
-mesmo período 2024,paid_total,Canais pagos (total),2024-07,2024-08,490.0,457.0,108719.57999999999,110628.68000000002
+mesmo período 2024,paid_total,Mídia paga (total),2024-07,2024-08,490.0,457.0,108719.57999999999,110628.68000000002
 mesmo período 2024,paid_video,Google Demand Gen (vídeo),2024-07,2024-08,0.0,0.0,,
 mesmo período 2024,performance_max,Google Performance Max,2024-07,2024-08,75.0,99.0,21792.469999999998,22258.16
 mesmo período 2024,referral,Sites de referência,2024-07,2024-08,20.0,25.0,,

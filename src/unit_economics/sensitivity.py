@@ -27,8 +27,9 @@ def _premises(base: Settings):
     c = base.costs
     alt_models = [m for m in ATTRIBUTION_MODELS if m != base.attribution_model]
     return [
-        ("ltv_horizon_months", "Meses de recompra contados no LTV",
-         base.with_(ltv_horizon_months=6), base.with_(ltv_horizon_months=24), "6 meses", "24 meses"),
+        # Read on the same cohorts at both ends (see tornado): a 24-month LTV
+        # exists only for the oldest cohorts, which were acquired more cheaply.
+        ("ltv_horizon_months", "Meses de recompra contados no LTV", None, None, "6 meses", "24 meses"),
         ("attribution_model", "Modelo de atribuição do 1º pedido",
          [base.with_(attribution_model=m) for m in alt_models], None, None, None),
         ("payment_fee_card", "Taxa do cartão",
@@ -50,8 +51,10 @@ def _premises(base: Settings):
     ]
 
 
-def _summary(settings: Settings) -> pd.DataFrame:
+def _summary(settings: Settings, keep: dict | None = None) -> pd.DataFrame:
     outputs = build(settings, write=False)
+    if keep is not None:
+        keep.update(outputs)
     return channel_summary(outputs["channel_comparisons"], outputs["channel_ltv_curve"]).set_index("channel")
 
 
@@ -65,7 +68,8 @@ def tornado(base: Settings = Settings()) -> tuple[pd.DataFrame, pd.DataFrame]:
     Also returns the per-channel summaries of every attribution model, which
     the attribution table reuses instead of rebuilding them.
     """
-    base_summary = _summary(base)
+    base_outputs: dict = {}
+    base_summary = _summary(base, base_outputs)
     base_value = _paid_ratio(base_summary)
     rows, by_model = [], {base.attribution_model: base_summary}
     for premise, text, low, high, low_text, high_text in _premises(base):
@@ -77,6 +81,12 @@ def tornado(base: Settings = Settings()) -> tuple[pd.DataFrame, pd.DataFrame]:
             high_model = max(values, key=values.get)
             low_value, high_value = values[low_model], values[high_model]
             low_text, high_text = low_model, high_model
+        elif premise == "ltv_horizon_months":
+            # 6 and 24 months on the cohorts observed for 24: the horizon moves,
+            # the customers do not. (Rebuilding at 6 and 24 would compare 31
+            # cohorts with the 13 oldest and cheapest ones.)
+            low_value, high_value, cohorts = same_cohorts(base_outputs, 6, 24)
+            low_text, high_text = f"6 meses ({cohorts} coortes)", f"24 meses (as mesmas {cohorts})"
         else:
             low_value, high_value = _paid_ratio(_summary(low)), _paid_ratio(_summary(high))
         rows.append({

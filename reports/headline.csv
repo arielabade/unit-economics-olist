@@ -55,7 +55,7 @@ pause_store_change,-0.3432
 baseline_store_change,-0.0368
 baseline_others_drop,-12.0
 top_premise,ltv_horizon_months
-top_premise_low,1.04
+top_premise_low,1.17
 top_premise_high,2.11
 second_premise,attribution_model
 second_premise_low,1.21

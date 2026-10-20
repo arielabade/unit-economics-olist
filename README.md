@@ -4,7 +4,7 @@
 <p align="center">
   <img alt="Method stage: scale" src="https://img.shields.io/badge/stage-scale-5B6CFF?style=flat-square&labelColor=050505">
   <img alt="DuckDB and SQL" src="https://img.shields.io/badge/DuckDB-SQL-7E8791?style=flat-square&labelColor=050505">
-  <img alt="Tests: 62" src="https://img.shields.io/badge/tests-62-7E8791?style=flat-square&labelColor=050505">
+  <img alt="Tests: 64" src="https://img.shields.io/badge/tests-64-7E8791?style=flat-square&labelColor=050505">
   <img alt="Data: simulated e-commerce" src="https://img.shields.io/badge/data-simulated_e--commerce-C8B680?style=flat-square&labelColor=050505">
   <a href="https://arielabade.github.io/unit-economics-olist/dashboard/"><img alt="Dashboard" src="https://img.shields.io/badge/dashboard-GitHub_Pages-5B6CFF?style=flat-square&labelColor=050505"></a>
 </p>
@@ -434,14 +434,14 @@ was moved on its own and the whole pipeline rebuilt:
 
 | Premise | Low | High | All paid channels' LTV/CAC | Swing |
 | --- | --- | --- | --- | ---: |
-| Months of repeat purchase counted in LTV | 6 months | 24 months | 1.04x to 2.11x | 1.07 |
+| Months of repeat purchase counted in LTV | 6 months (13 cohorts) | 24 months (the same 13) | 1.17x to 2.11x | 0.94 |
 | Attribution model of the first order | data driven | last click | 1.21x to 1.47x | 0.26 |
 | Card fee | 1.75% | 5.25% | 1.44x to 1.50x | 0.06 |
 | Handling cost per order | R$ 1.50 | R$ 4.50 | 1.45x to 1.49x | 0.04 |
 | Pix fee | 0.50% | 1.50% | 1.46x to 1.47x | 0.01 |
 | Boleto fee | R$ 1.75 | R$ 5.25 | 1.47x to 1.47x | 0.00 |
 
-<p align="center"><img alt="Sensitivity: months of repeat purchase move the paid LTV/CAC from 1.04x to 2.11x; the assumed costs by at most 0.06" src="assets/figures/sensitivity.svg" width="100%"></p>
+<p align="center"><img alt="Sensitivity: months of repeat purchase move the paid LTV/CAC from 1.17x to 2.11x; the assumed costs by at most 0.06" src="assets/figures/sensitivity.svg" width="100%"></p>
 
 <p align="center"><img alt="LTV/CAC by months since acquisition: all paid channels break even in month 6 and stay below 3x for two years" src="assets/figures/ltv_cac_horizon.svg" width="100%"></p>
 
@@ -483,7 +483,7 @@ pip install -e ".[dev,ingest]"
 
 python -m unit_economics.ingest      # reads the ecommerce MySQL, checks row counts and control sums
 python -m unit_economics.pipeline    # builds the analysis, writes data/processed/
-pytest                               # 62 tests, none of which needs the database
+pytest                               # 64 tests, none of which needs the database
 python -m unit_economics.reports     # rewrites reports/ (includes the sensitivity rebuilds, ~1 min)
 python -m unit_economics.figures     # README charts from reports/
 python -m unit_economics.dashboard   # docs/dashboard/index.html from reports/

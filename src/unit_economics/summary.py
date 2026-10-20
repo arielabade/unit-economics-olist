@@ -20,7 +20,7 @@ from .config import CHANNELS, SMALL_SAMPLE_WINDOW
 from .metrics import break_even_cac, cac, ltv_cac_ratio, payback_from_curve, ratio_of_sums
 
 ROLLUPS = ("paid_total", "all")
-ROLLUP_LABELS = {"paid_total": "Canais pagos (total)", "all": "Loja inteira"}
+ROLLUP_LABELS = {"paid_total": "Mídia paga (total)", "all": "Loja inteira"}
 
 
 def label(channel: str) -> str:

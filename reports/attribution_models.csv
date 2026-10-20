@@ -15,10 +15,10 @@ data_driven,paid_social,Meta Ads,8096.2,304.94,0.92
 first_click,paid_social,Meta Ads,9388.0,262.98,1.1
 last_click,paid_social,Meta Ads,8871.0,278.3,1.0
 linear,paid_social,Meta Ads,8367.0,295.07,0.96
-data_driven,paid_total,Canais pagos (total),16793.0,252.2,1.21
-first_click,paid_total,Canais pagos (total),18178.0,232.99,1.31
-last_click,paid_total,Canais pagos (total),20278.0,208.86,1.47
-linear,paid_total,Canais pagos (total),17661.3,239.8,1.28
+data_driven,paid_total,Mídia paga (total),16793.0,252.2,1.21
+first_click,paid_total,Mídia paga (total),18178.0,232.99,1.31
+last_click,paid_total,Mídia paga (total),20278.0,208.86,1.47
+linear,paid_total,Mídia paga (total),17661.3,239.8,1.28
 data_driven,paid_video,Google Demand Gen (vídeo),6.3,9911.5,0.1
 first_click,paid_video,Google Demand Gen (vídeo),5.0,12574.92,0.09
 last_click,paid_video,Google Demand Gen (vídeo),14.0,4491.04,0.11

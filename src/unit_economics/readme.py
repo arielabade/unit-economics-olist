@@ -104,11 +104,12 @@ def yearly_table(yearly: pd.DataFrame) -> str:
 
 
 def sensitivity_table(sensitivity: pd.DataFrame) -> str:
-    words = {"6 meses": "6 months", "24 meses": "24 months"}
+    def words(text: str) -> str:
+        return (str(text).replace("as mesmas", "the same").replace("meses", "months")
+                .replace("coortes", "cohorts").replace("_", " "))
     lines = ["| Premise | Low | High | All paid channels' LTV/CAC | Swing |", "| --- | --- | --- | --- | ---: |"]
     for _, row in sensitivity.iterrows():
-        low = words.get(row["low_setting"], str(row["low_setting"]).replace("_", " "))
-        high = words.get(row["high_setting"], str(row["high_setting"]).replace("_", " "))
+        low, high = words(row["low_setting"]), words(row["high_setting"])
         lines.append(f"| {PREMISES[row['premise']]} | {low} | {high} | {row['low']:.2f}x to {row['high']:.2f}x | "
                      f"{row['swing']:.2f} |")
     return "\n".join(lines)

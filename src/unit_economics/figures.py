@@ -216,8 +216,8 @@ def sensitivity(frame: pd.DataFrame, h: dict) -> Path:
 
 
 def _setting(text: str) -> str:
-    return (str(text).replace("meses", "months").replace("_", " ").replace("R$ ", "R$ ")
-            .replace(",", "."))
+    return (str(text).replace("as mesmas", "same").replace("coortes", "cohorts").replace("meses", "months")
+            .replace("_", " ").replace(",", "."))
 
 
 def brand_panels(h: dict) -> list[Path]:
